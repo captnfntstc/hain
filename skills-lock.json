@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "skills": {
+    "apple-design": {
+      "source": "emilkowalski/skills",
+      "commit": "64eb3deb9a5fbfa041faf783e0bc3fd635872e9c",
+      "sourceType": "github",
+      "skillPath": "skills/apple-design/SKILL.md",
+      "computedHash": "163ba8b42c7d9d5ccb08674266d4727c9ec610b9d876c906b1f29ce5e0d933da"
+    },
+    "design-review": {
+      "source": "Superfuture/design-review",
+      "commit": "d4d2609b53fccb475d11490e2c6261e5eb2f0c5d",
+      "sourceType": "github",
+      "skillPath": "design-review/skills/design-review/SKILL.md",
+      "computedHash": "e94941d6328f40790cd715da11516404ce952fbc9e93c3cdad1b0659938b4137"
+    },
+    "stageshow": {
+      "source": "benjitaylor/skills",
+      "commit": "299140fafd08df55a9c234e610c3f64af3f45531",
+      "sourceType": "github",
+      "skillPath": "stageshow/SKILL.md",
+      "computedHash": "faaf72b41c206b98da5788093eb07fcdceb80dee90b5dc6dd921048196279474"
+    }
+  }
+}
