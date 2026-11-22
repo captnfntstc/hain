@@ -12,6 +12,7 @@ const config: Config = {
         display: ["var(--font-display)", "sans-serif"],
         sans: ["var(--font-sans)", "sans-serif"],
         inter: ["var(--font-inter)", "sans-serif"],
+        quicksand: ["var(--font-quicksand)", "'Quicksand'", "sans-serif"],
         serif: ["var(--font-serif)", "Georgia", "serif"],
         mono: ["var(--font-mono)", "monospace"],
       },

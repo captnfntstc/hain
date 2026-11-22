@@ -1,11 +1,24 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
-import { Recipe, Ingredient, TimeOfDayState, ThemeMode, IngredientStatus, ActiveTab, HouseholdMember, CurrencyCode, SUPPORTED_CURRENCIES } from '../types/hain';
+import { 
+  Recipe, 
+  Ingredient, 
+  TimeOfDayState, 
+  ThemeMode, 
+  IngredientStatus, 
+  ActiveTab, 
+  HouseholdMember, 
+  CurrencyCode, 
+  SUPPORTED_CURRENCIES,
+  PrimaryColorThemeId,
+  ColorThemeConfig,
+  COLOR_THEMES
+} from '../types/hain';
 import { MOCK_RECIPES, PANTRY_STAPLES_LIST } from '../data/mockData';
 import { TRANSLATIONS, Language } from '../data/translations';
 
-export type { ActiveTab, Language, ThemeMode, CurrencyCode };
+export type { ActiveTab, Language, ThemeMode, CurrencyCode, PrimaryColorThemeId, ColorThemeConfig };
 
 interface HainContextType {
   // Navigation Tabs
@@ -51,6 +64,13 @@ interface HainContextType {
   // Theme Mode (Dark, Light, System)
   themeMode: ThemeMode;
   setThemeMode: (mode: ThemeMode) => void;
+
+  // Developer Options: Primary Color Theme
+  colorThemeId: PrimaryColorThemeId;
+  colorTheme: ColorThemeConfig;
+  setColorThemeId: (themeId: PrimaryColorThemeId) => void;
+  isDevOptionsOpen: boolean;
+  setIsDevOptionsOpen: (open: boolean) => void;
 
   // Ambiance & Time (Automatic by default)
   timeOfDay: TimeOfDayState;
@@ -164,6 +184,43 @@ export function HainProvider({ children }: { children: React.ReactNode }) {
 
   // Theme mode: 'light' | 'dark' | 'system' (UI ready, not implemented into CSS yet as requested)
   const [themeMode, setThemeMode] = useState<ThemeMode>('system');
+
+  // Developer Options: Primary Color Theme
+  const [colorThemeId, setColorThemeIdState] = useState<PrimaryColorThemeId>('warm-red');
+  const [isDevOptionsOpen, setIsDevOptionsOpen] = useState<boolean>(false);
+
+  const colorTheme = useMemo(
+    () => COLOR_THEMES[colorThemeId] || COLOR_THEMES['warm-red'],
+    [colorThemeId]
+  );
+
+  const setColorThemeId = useCallback((themeId: PrimaryColorThemeId) => {
+    setColorThemeIdState(themeId);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('hain_color_theme', themeId);
+      const theme = COLOR_THEMES[themeId];
+      if (theme) {
+        document.documentElement.style.setProperty('--theme-primary', theme.badgeBg);
+        document.documentElement.style.setProperty('--theme-banner-start', theme.headerBg);
+        document.documentElement.style.setProperty('--theme-banner-end', theme.headerBg);
+        document.documentElement.style.setProperty('--theme-banner-text', theme.headerText);
+        document.documentElement.style.setProperty('--brand-primary', theme.accentColor);
+        document.documentElement.style.setProperty('--lg-fill', theme.accentColor);
+      }
+    }
+  }, []);
+
+  // Restore saved theme on initial mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('hain_color_theme') as PrimaryColorThemeId | null;
+      if (saved && COLOR_THEMES[saved]) {
+        setColorThemeId(saved);
+      } else {
+        setColorThemeId('warm-red');
+      }
+    }
+  }, [setColorThemeId]);
 
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDayState>('morning');
   const [isAutoTime, setIsAutoTime] = useState<boolean>(true);
@@ -542,6 +599,11 @@ export function HainProvider({ children }: { children: React.ReactNode }) {
         setIsAutoTime,
         themeMode,
         setThemeMode,
+        colorThemeId,
+        colorTheme,
+        setColorThemeId,
+        isDevOptionsOpen,
+        setIsDevOptionsOpen,
         budgetCap,
         setBudgetCap,
         servingsPax,

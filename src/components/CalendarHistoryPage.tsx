@@ -30,7 +30,8 @@ export default function CalendarHistoryPage() {
     setIsCalendarPageOpen, 
     setActiveRecipe, 
     setIsRecipeDetailOpen,
-    language 
+    language,
+    colorTheme,
   } = useHain();
 
   // Calendar State: Current viewing month and selected date
@@ -222,10 +223,19 @@ export default function CalendarHistoryPage() {
       */}
       <section 
         aria-label="Calendar Header" 
-        className="bg-[#B8381D] text-white px-5 sm:px-6 pt-safe pb-6 rounded-b-[36px] shadow-md transition-all duration-300"
+        style={{ 
+          backgroundColor: colorTheme.headerBg,
+          color: colorTheme.headerText 
+        }}
+        className="px-5 sm:px-6 pt-safe pb-6 rounded-b-[36px] shadow-md transition-all duration-300"
       >
-        <div className="flex items-center justify-between text-white font-medium mb-3">
-          <span className="font-inter font-bold tracking-[0.35em] text-xs sm:text-sm text-white select-none">H A I N</span>
+        <div className="flex items-center justify-between font-medium mb-3">
+          <span 
+            style={{ color: colorTheme.headerTrackedText }}
+            className="font-inter font-bold tracking-[0.35em] text-xs sm:text-sm select-none"
+          >
+            H A I N
+          </span>
         </div>
 
         <div className="flex items-center gap-3.5">
@@ -234,15 +244,26 @@ export default function CalendarHistoryPage() {
             onClick={() => setIsCalendarPageOpen(false)}
             aria-label="Back to Home"
             title="Back to Home"
-            className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 transition-all text-white border border-white/20 backdrop-blur-sm shadow-sm tap-spring flex items-center justify-center shrink-0"
+            style={{ 
+              borderColor: colorTheme.headerIconBorder,
+              color: colorTheme.headerText,
+              backgroundColor: colorTheme.headerText === '#FFFFFF' ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.08)'
+            }}
+            className="w-10 h-10 rounded-full hover:opacity-80 active:scale-95 transition-all border backdrop-blur-sm shadow-sm tap-spring flex items-center justify-center shrink-0"
           >
-            <ArrowLeft className="w-5 h-5 text-white" />
+            <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="font-serif font-bold text-2xl sm:text-3xl text-white tracking-tight leading-tight">
+            <h1 
+              style={{ color: colorTheme.headerText }}
+              className="font-serif font-bold text-2xl sm:text-3xl tracking-tight leading-tight"
+            >
               {language === 'en' ? 'Meal Calendar' : 'Ulam Calendar'}
             </h1>
-            <p className="text-xs text-white/80 font-sans mt-0.5">
+            <p 
+              style={{ color: colorTheme.headerSubtext }}
+              className="text-xs font-sans mt-0.5"
+            >
               {language === 'en' 
                 ? 'Track cooked meals and rediscover family favorites' 
                 : 'Subaybayan ang mga niluto at balikan ang mga paborito'}

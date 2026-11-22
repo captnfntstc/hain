@@ -27,7 +27,8 @@ import {
   Volume2,
   SlidersHorizontal,
   BookmarkCheck,
-  Coins
+  Coins,
+  Palette
 } from 'lucide-react';
 import { HouseholdMember, SUPPORTED_CURRENCIES } from '../types/hain';
 import { AllergenIcon, DietaryIcon } from './FilterIcons';
@@ -58,6 +59,8 @@ export default function MoreTab() {
     setLanguage,
     currency,
     setCurrency,
+    colorTheme,
+    setIsDevOptionsOpen,
     currencySymbol,
   } = useHain();
 
@@ -968,6 +971,42 @@ export default function MoreTab() {
                       <Sparkles className="w-3.5 h-3.5 text-stone-500" />
                       <span>{t.theme_system}</span>
                     </button>
+                  </div>
+                </div>
+
+                {/* 4. DEVELOPER OPTIONS: PRIMARY COLOR THEME ROW */}
+                <div 
+                  onClick={() => setIsDevOptionsOpen(true)}
+                  className="px-4 py-3.5 flex items-center justify-between hover:bg-stone-50 cursor-pointer tap-spring transition-colors border-t border-stone-100 group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div 
+                      style={{ backgroundColor: colorTheme.accentSubtle, color: colorTheme.accentColor }}
+                      className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors"
+                    >
+                      <Palette className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-sans font-bold text-xs text-stone-900 group-hover:text-stone-950">
+                          {language === 'en' ? 'Primary Color Theme' : 'Pangunahing Kulay'}
+                        </h3>
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-mono">
+                          DEV
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-stone-500">
+                        {colorTheme.name}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span 
+                      style={{ backgroundColor: colorTheme.badgeBg }}
+                      className="w-4 h-4 rounded-full border border-black/10 shadow-xs shrink-0"
+                    />
+                    <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-stone-700 shrink-0" />
                   </div>
                 </div>
 

@@ -55,6 +55,7 @@ export default function HomeTab() {
     resetFilters,
     t,
     language,
+    colorTheme,
   } = useHain();
 
   const [isScrolled, setIsScrolled] = useState(false);
@@ -187,17 +188,26 @@ export default function HomeTab() {
       */}
       <section 
         aria-label="Home Header" 
-        className={`sticky top-0 z-30 bg-[#B8381D] text-white px-5 sm:px-6 pt-safe shadow-md transition-all duration-200 ease-out ${
+        style={{ 
+          backgroundColor: colorTheme.headerBg,
+          color: colorTheme.headerText 
+        }}
+        className={`sticky top-0 z-30 px-5 sm:px-6 pt-safe shadow-md transition-all duration-300 ease-out ${
           isScrolled 
-            ? 'pb-2.5 rounded-b-[24px] shadow-lg shadow-[#B8381D]/20' 
+            ? 'pb-2.5 rounded-b-[24px] shadow-lg' 
             : 'pb-6 rounded-b-[36px] sm:rounded-b-[40px]'
         }`}
       >
         {/* Brand bar with calendar button - smoothly collapses on scroll to minimize magnetized height */}
-        <div className={`flex items-center justify-between text-white font-medium transition-all duration-200 ease-out overflow-hidden ${
+        <div className={`flex items-center justify-between font-medium transition-all duration-200 ease-out overflow-hidden ${
           isScrolled ? 'max-h-0 opacity-0 mb-0' : 'max-h-12 opacity-100 mb-3.5'
         }`}>
-          <span className="font-inter font-bold tracking-[0.35em] text-xs sm:text-sm text-white select-none">H A I N</span>
+          <span 
+            style={{ color: colorTheme.headerTrackedText }}
+            className="font-inter font-bold tracking-[0.35em] text-xs sm:text-sm select-none transition-colors duration-300"
+          >
+            H A I N
+          </span>
           
           {/* Dedicated Calendar Page Button positioned on top right where flag was */}
           <button
@@ -205,9 +215,14 @@ export default function HomeTab() {
             onClick={() => setIsCalendarPageOpen(true)}
             aria-label="Open Meal Calendar"
             title="Open Meal Calendar"
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-white/15 hover:bg-white/25 active:scale-95 transition-all text-white border border-white/20 backdrop-blur-sm shadow-sm tap-spring shrink-0"
+            style={{ 
+              borderColor: colorTheme.headerIconBorder,
+              color: colorTheme.headerText,
+              backgroundColor: colorTheme.headerText === '#FFFFFF' ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.08)'
+            }}
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center hover:opacity-85 active:scale-95 transition-all border backdrop-blur-sm shadow-sm tap-spring shrink-0"
           >
-            <CalendarIcon className="w-4 h-4 text-white" />
+            <CalendarIcon className="w-4 h-4" />
           </button>
         </div>
 
@@ -215,7 +230,10 @@ export default function HomeTab() {
         <div className={`overflow-hidden transition-all duration-200 ease-out ${
           isScrolled ? 'max-h-0 opacity-0 mb-0' : 'max-h-32 opacity-100 mb-4'
         }`}>
-          <h1 className="font-serif font-bold text-[32px] xs:text-[36px] sm:text-[40px] tracking-tight leading-[1.12] text-white">
+          <h1 
+            style={{ color: colorTheme.headerText }}
+            className="font-serif font-bold text-[32px] xs:text-[36px] sm:text-[40px] tracking-tight leading-[1.12] transition-colors duration-300"
+          >
             {language === 'tl' ? (
               <>
                 Anong craving mo
@@ -269,24 +287,27 @@ export default function HomeTab() {
         
         {/* 
           TODAY'S BUDGET & SERVES CARD 
-          Exact match to Figma mockup: Inter font, bold metrics, clean text Edit action
+          Quicksand font requested by user, bold metrics, clean text Edit action
         */}
         <div className="bg-white rounded-[28px] p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-[#E5DAC6]">
           <div className="grid grid-cols-[1.15fr_0.85fr] divide-x divide-[#E5DAC6] pb-3.5">
             {/* Left Column: Today's Budget */}
             <div className="pr-3 xs:pr-4">
-              <div className="font-inter text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] text-stone-900 mb-2.5">
+              <div className="font-quicksand text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] text-stone-900 mb-2.5">
                 {language === 'en' ? "TODAY'S BUDGET" : "BADYET NGAYON"}
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-[16px] bg-[#B8381D] text-white flex items-center justify-center shadow-sm shrink-0">
+                <div 
+                  style={{ backgroundColor: colorTheme.badgeBg }}
+                  className="w-12 h-12 rounded-[16px] text-white flex items-center justify-center shadow-sm shrink-0 transition-colors duration-300"
+                >
                   <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                     <rect width="20" height="13" x="2" y="5.5" rx="2" />
                     <circle cx="12" cy="12" r="2.2" />
                     <path d="M6 12h.01M18 12h.01" />
                   </svg>
                 </div>
-                <div className="font-inter font-[800] text-[26px] xs:text-[30px] sm:text-[34px] text-stone-900 tracking-tight leading-none whitespace-nowrap">
+                <div className="font-quicksand font-[700] text-[26px] xs:text-[30px] sm:text-[34px] text-stone-900 tracking-tight leading-none whitespace-nowrap">
                   P {budgetCap.toLocaleString()}
                 </div>
               </div>
@@ -294,31 +315,42 @@ export default function HomeTab() {
 
             {/* Right Column: Serves */}
             <div className="pl-3.5 xs:pl-4">
-              <div className="font-inter text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] text-stone-900 mb-2.5">
+              <div className="font-quicksand text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] text-stone-900 mb-2.5">
                 {language === 'en' ? "SERVES" : "KASALO"}
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-[#B8381D] text-white flex items-center justify-center shadow-sm shrink-0">
+                <div 
+                  style={{ backgroundColor: colorTheme.badgeBg }}
+                  className="w-12 h-12 rounded-full text-white flex items-center justify-center shadow-sm shrink-0 transition-colors duration-300"
+                >
                   <Users className="w-6 h-6 stroke-[2.2]" />
                 </div>
-                <div className="font-inter font-[800] text-[26px] xs:text-[30px] sm:text-[34px] text-stone-900 tracking-tight leading-none whitespace-nowrap">
+                <div className="font-quicksand font-[700] text-[26px] xs:text-[30px] sm:text-[34px] text-stone-900 tracking-tight leading-none whitespace-nowrap">
                   {servingsPax}pax.
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Subtext and Clean Text Edit Action (matching Figma reference) */}
+          {/* Subtext and Clean Text Edit Action */}
           <div className="flex items-center justify-between pt-3.5 border-t border-[#E5DAC6]">
-            <div className="font-inter text-xs sm:text-[13px] font-semibold text-stone-900">
-              {language === 'en' ? 'About' : 'Tinatayang'} <span className="font-bold text-[#B8381D]">P{Math.round(costPerPerson)}</span> {language === 'en' ? 'per person' : 'bawat tao'}
+            <div className="font-quicksand text-xs sm:text-[13px] font-bold text-stone-900">
+              {language === 'en' ? 'About' : 'Tinatayang'}{' '}
+              <span 
+                style={{ color: colorTheme.accentColor }} 
+                className="font-bold transition-colors duration-300"
+              >
+                P{Math.round(costPerPerson)}
+              </span>{' '}
+              {language === 'en' ? 'per person' : 'bawat tao'}
             </div>
             <button
               onClick={() => {
                 setBudgetModalStep(1);
                 setIsBudgetModalOpen(true);
               }}
-              className="font-inter font-bold text-xs sm:text-[13px] text-stone-900 hover:text-[#B8381D] tap-spring transition-colors cursor-pointer"
+              style={{ color: colorTheme.accentColor }}
+              className="font-quicksand font-bold text-xs sm:text-[13px] tap-spring transition-colors duration-300 cursor-pointer hover:opacity-80"
             >
               {language === 'en' ? 'Edit' : 'Baguhin'}
             </button>
@@ -438,7 +470,10 @@ export default function HomeTab() {
                 .replace('{pax}', String(servingsPax))}
             </p>
           </div>
-          <span className="text-xs text-[#B8381D] font-bold">
+          <span 
+            style={{ color: colorTheme.accentColor }} 
+            className="text-xs font-bold transition-colors duration-300"
+          >
             {t.home_dishes_count.replace('{count}', String(filteredRecipes.length))}
           </span>
         </div>

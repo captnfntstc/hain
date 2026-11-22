@@ -127,6 +127,7 @@
   --font-sans: 'Quicksand', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-quicksand: 'Quicksand', -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* LIGHT MODE (Default as requested by user) */
   --theme-banner-start: #B8381D;
@@ -184,6 +185,10 @@ body {
 
 .font-serif-title {
   font-family: var(--font-serif);
+}
+
+.font-quicksand {
+  font-family: var(--font-quicksand), 'Quicksand', sans-serif !important;
 }
 
 h1, h2, h3, h4, .font-display {

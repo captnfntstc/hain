@@ -21,6 +21,7 @@ import FiltersModal from '../components/FiltersModal';
 import CalendarPlannerModal from '../components/CalendarPlannerModal';
 import CalendarHistoryPage from '../components/CalendarHistoryPage';
 import CategoryDishesPage from '../components/CategoryDishesPage';
+import DeveloperOptionsModal from '../components/DeveloperOptionsModal';
 
 function MainApp() {
   const { 
@@ -66,6 +67,7 @@ function MainApp() {
       <CookCountdownModal />
       <PabiliExportModal />
       <PadeliverModal />
+      <DeveloperOptionsModal />
     </div>
   );
 }
