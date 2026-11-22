@@ -8,9 +8,28 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        display: ["var(--font-display)", "sans-serif"],
+        sans: ["var(--font-sans)", "sans-serif"],
+        inter: ["var(--font-inter)", "sans-serif"],
+        serif: ["var(--font-serif)", "Georgia", "serif"],
+        mono: ["var(--font-mono)", "monospace"],
+      },
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        app: "var(--bg-app)",
+        surface: "var(--bg-surface)",
+        elevated: "var(--bg-surface-elevated)",
+        subtle: "var(--border-subtle)",
+        strong: "var(--border-strong)",
+        main: "var(--text-main)",
+        muted: "var(--text-muted)",
+        dim: "var(--text-subtle)",
+        brand: {
+          DEFAULT: "var(--brand-primary)",
+          hover: "var(--brand-primary-hover)",
+          subtle: "var(--brand-primary-subtle)",
+          accent: "var(--brand-accent)",
+        },
       },
     },
   },
