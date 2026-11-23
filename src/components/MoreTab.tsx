@@ -33,7 +33,9 @@ import {
   Bus,
   Car,
   ShoppingBag,
-  Compass
+  Compass,
+  Navigation,
+  Flame,
 } from 'lucide-react';
 import { HouseholdMember, SUPPORTED_CURRENCIES, NEARBY_WET_MARKETS, NEARBY_SUPERMARKETS, TransportMode, formatStoreTravelTime } from '../types/hain';
 import { AllergenIcon, DietaryIcon } from './FilterIcons';
@@ -696,11 +698,15 @@ export default function MoreTab() {
       )}
 
       {/* ============================================================ */}
-      {/* VIEW 4: PALENGKE & BUDGET PAGE                               */}
+      {/* VIEW 4: PALENGKE & BUDGET PAGE (Grouped & Clarified Settings)  */}
       {/* ============================================================ */}
       {currentView === 'palengke' && (
-        <div className="animate-in slide-in-from-right duration-250">
-          <section className="bg-[#B8381D] text-white px-5 pt-safe pb-5 rounded-b-[36px] shadow-md">
+        <div className="animate-in slide-in-from-right duration-250 pb-8">
+          {/* Header */}
+          <section 
+            style={{ backgroundColor: colorTheme.headerBg }}
+            className="text-white px-5 pt-safe pb-5 rounded-b-[36px] shadow-md transition-colors duration-300"
+          >
             <div className="flex items-center gap-3 mb-2">
               <Button
                 variant="glass"
@@ -709,193 +715,303 @@ export default function MoreTab() {
                 className="!w-9 !h-9 !rounded-full !p-0 lg-glass-clear flex items-center justify-center drop-shadow-sm"
               />
               <h1 className="font-serif-title font-bold text-xl text-white">
-                {t.market_title}
+                {language === 'tl' ? 'Palengke at Badyet' : 'Market & Budget'}
               </h1>
             </div>
-            <p className="text-xs text-white/80 pl-12 font-sans">
-              {t.market_sub}
+            <p className="text-xs text-white/85 pl-12 font-sans leading-relaxed">
+              {language === 'tl' 
+                ? 'I-ayos ang lokasyon ng bahay, paboritong bilihan, paraan ng biyahe, at target na badyet.'
+                : 'Configure your home address, preferred markets, travel mode, and daily budget.'}
             </p>
           </section>
 
-          <div className="px-4 pt-4 space-y-4">
-            {/* Daily Budget & Pax Settings */}
-            <div 
-              onClick={() => {
-                setBudgetModalStep(1);
-                setIsBudgetModalOpen(true);
-              }}
-              className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-3 cursor-pointer tap-spring hover:border-stone-300 transition-all"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-sans font-bold text-xs text-stone-900">
-                    {t.market_budget_title}
-                  </h3>
-                  <p className="text-[11px] text-stone-500">
-                    {t.market_budget_sub}
-                  </p>
-                </div>
-                <ChevronRight className="w-5 h-5 text-stone-400 shrink-0" />
+          <div className="px-4 pt-4 space-y-5">
+
+            {/* ======================================================= */}
+            {/* GROUP 1: LOCATION & TRAVEL (Lokasyon at Pagbiyahe)      */}
+            {/* ======================================================= */}
+            <div className="space-y-2">
+              <div className="px-1.5">
+                <h2 className="text-[11px] font-bold uppercase tracking-wider text-stone-500">
+                  {language === 'tl' ? '📍 Lokasyon at Pagbiyahe' : '📍 Location & Travel'}
+                </h2>
+                <p className="text-[11px] text-stone-400">
+                  {language === 'tl' 
+                    ? 'Pinagbabatayan ng distansya at oras papunta sa mga pamilihan.'
+                    : 'Calculates real-world distance, commute times, and traffic from home.'}
+                </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-between">
-                <div>
-                  <div className="text-[10px] uppercase font-bold text-stone-400">{t.market_current_budget}</div>
-                  <div className="text-lg font-bold text-stone-900">₱{budgetCap.toLocaleString()}</div>
-                </div>
-                <div className="text-right">
-                  <div className="text-[10px] uppercase font-bold text-stone-400">{t.market_serves_for}</div>
-                  <div className="text-lg font-bold text-stone-900">{servingsPax} Pax</div>
-                </div>
-              </div>
-            </div>
-
-            {/* GPS Region & Neighborhood Anchor Card */}
-            <div 
-              onClick={() => setIsRegionModalOpen(true)}
-              className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-2 cursor-pointer tap-spring hover:border-stone-300 transition-all"
-            >
-              <div className="flex items-center justify-between">
-                <div className="min-w-0 pr-2">
-                  <span className="text-[10px] uppercase font-bold text-stone-400">
-                    {language === 'tl' ? 'Kasalukuyang Lokasyon (GPS Anchor)' : 'GPS LOCATION ANCHOR'}
-                  </span>
-                  <div className="text-xs font-bold text-stone-900 flex items-center gap-1.5 mt-0.5">
-                    <MapPin className="w-3.5 h-3.5 text-[#B8381D] shrink-0" />
-                    <span className="truncate">{userAddress}</span>
-                  </div>
-                  <div className="text-[11px] text-stone-500 font-medium mt-0.5 pl-5">
-                    {language === 'tl' ? 'Pindutin upang buksan ang address map' : 'Tap to open interactive address map'}
-                  </div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-stone-400 shrink-0" />
-              </div>
-            </div>
-
-            {/* Mode of Transportation Card (Opens dedicated selection page) */}
-            <div 
-              onClick={() => setCurrentView('transport')}
-              className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-2 cursor-pointer tap-spring hover:border-stone-300 transition-all"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-stone-400">
-                    {language === 'tl' ? 'Paraan ng Pagpunta' : 'MODE OF TRANSPORTATION'}
-                  </span>
-                  <div className="text-xs font-bold text-stone-900 flex items-center gap-1.5 mt-0.5">
-                    {transportMode === 'dynamic' ? <Sparkles className="w-3.5 h-3.5 text-amber-500" /> :
-                     transportMode === 'walk' ? <Footprints className="w-3.5 h-3.5 text-[#B8381D]" /> :
-                     transportMode === 'commute' ? <Bus className="w-3.5 h-3.5 text-blue-600" /> :
-                     <Car className="w-3.5 h-3.5 text-emerald-600" />}
-                    <span>
-                      {transportMode === 'dynamic' ? (language === 'tl' ? 'Dynamic (Kahit ano / Flexible)' : 'Dynamic (Flexible / Any)') :
-                       transportMode === 'walk' ? (language === 'tl' ? 'Lakad lang' : 'Walking') :
-                       transportMode === 'commute' ? (language === 'tl' ? 'Commute (Jeep / Bus / Trike)' : 'Commute / Public Transit') :
-                       (language === 'tl' ? 'Kotse o Motor' : 'Car / Motor')}
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-stone-500 font-medium mt-0.5 pl-5">
-                    {transportMode === 'dynamic'
-                      ? (language === 'tl' ? 'Awtomatikong umaakma sa pinakamabilis o swak na paraan' : 'Automatically adapts to fastest or best travel mode')
-                      : (language === 'tl' ? 'Naka-base ang kalkulasyon ng oras sa napili' : 'Travel times calculated based on this mode')}
-                  </div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-stone-400 shrink-0" />
-              </div>
-            </div>
-
-            {/* PREFERRED WETMARKET (Compact Card as requested in uploaded_media_0_1795435697978) */}
-            <div 
-              onClick={() => openStoreMap('wetmarket')}
-              className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-2 cursor-pointer tap-spring hover:border-stone-300 transition-all"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-stone-400">
-                    {language === 'tl' ? 'Paboritong Palengke' : 'PREFERRED WETMARKET'}
-                  </span>
-                  <div className="text-xs font-bold text-stone-900 flex items-center gap-1.5 mt-0.5">
-                    <Store className="w-3.5 h-3.5 text-[#B8381D]" />
-                    <span>{activeWetMarket.name}</span>
-                  </div>
-                  <div className="text-[11px] text-stone-500 font-medium mt-0.5 pl-5">
-                    {activeWetMarket.distanceKm} km • {formatStoreTravelTime(activeWetMarket, transportMode)} {activeWetMarket.trafficLevel === 'Heavy' ? '• ⚠️ Mabigat ang trapiko' : ''}
-                  </div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-stone-400 shrink-0" />
-              </div>
-            </div>
-
-            {/* PREFERRED SUPERMARKET (Compact Card as requested in uploaded_media_0_1795435697978) */}
-            <div 
-              onClick={() => openStoreMap('supermarket')}
-              className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-2 cursor-pointer tap-spring hover:border-stone-300 transition-all"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-stone-400">
-                    {language === 'tl' ? 'Paboritong Supermarket' : 'PREFERRED SUPERMARKET'}
-                  </span>
-                  <div className="text-xs font-bold text-stone-900 flex items-center gap-1.5 mt-0.5">
-                    <ShoppingBag className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>{activeSupermarket.name}</span>
-                  </div>
-                  <div className="text-[11px] text-stone-500 font-medium mt-0.5 pl-5">
-                    {activeSupermarket.distanceKm} km • {formatStoreTravelTime(activeSupermarket, transportMode)} • {activeSupermarket.badge}
-                  </div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-stone-400 shrink-0" />
-              </div>
-            </div>
-
-            {/* Rice Toggle */}
-            <div className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-sans font-bold text-xs text-stone-900">
-                    {t.market_rice_title}
-                  </h3>
-                  <p className="text-[11px] text-stone-500">
-                    {t.market_rice_sub}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setIncludeRice(!includeRice)}
-                  className={`w-11 h-6 rounded-full transition-colors relative tap-spring shrink-0 ml-3 ${
-                    includeRice ? 'bg-emerald-600' : 'bg-stone-300'
-                  }`}
+              <div className="bg-white rounded-[24px] border border-stone-200/90 divide-y divide-stone-100 overflow-hidden shadow-2xs">
+                {/* Row 1: Home Address / GPS Pin */}
+                <div 
+                  onClick={() => setIsRegionModalOpen(true)}
+                  className="p-4 flex items-start gap-3.5 cursor-pointer tap-spring hover:bg-stone-50/80 transition-colors"
                 >
-                  <div className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${
-                    includeRice ? 'left-6' : 'left-1'
-                  }`} />
-                </button>
+                  <div className="w-10 h-10 rounded-2xl bg-rose-50 border border-rose-100 text-[#B8381D] flex items-center justify-center shrink-0 mt-0.5">
+                    <MapPin className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">
+                        {language === 'tl' ? 'Address ng Bahay (Home GPS Pin)' : 'Home Address / GPS Pin'}
+                      </span>
+                    </div>
+                    <div className="text-sm font-bold text-stone-900 truncate mt-0.5">
+                      {userAddress.split(',')[0]}
+                    </div>
+                    <p className="text-xs text-stone-500 truncate mt-0.5">
+                      {userAddress}
+                    </p>
+                    <p className="text-[11px] text-amber-800 dark:text-amber-400 font-medium mt-1">
+                      {language === 'tl' 
+                        ? 'Pinagmumulan ng biyahe para sa pinakamalapit na palengke'
+                        : 'Starting point used to calculate distances to nearest markets'}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-stone-400 shrink-0 mt-2" />
+                </div>
+
+                {/* Row 2: Travel Mode / Transportation */}
+                <div 
+                  onClick={() => setCurrentView('transport')}
+                  className="p-4 flex items-start gap-3.5 cursor-pointer tap-spring hover:bg-stone-50/80 transition-colors"
+                >
+                  <div className="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <Navigation className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">
+                        {language === 'tl' ? 'Paraan ng Pamamalengke' : 'Mode of Transportation'}
+                      </span>
+                    </div>
+                    <div className="text-sm font-bold text-stone-900 flex items-center gap-2 mt-0.5">
+                      <span>
+                        {transportMode === 'dynamic' ? (language === 'tl' ? 'Dynamic (Flexible: Lakad, Commute, o Kotse)' : 'Dynamic (Flexible: Walk, Commute, or Car)') :
+                         transportMode === 'walk' ? (language === 'tl' ? 'Lakad Lang (0-15 mins • ₱0 Pamasahe)' : 'Walking Only (0-15 mins • ₱0 Fare)') :
+                         transportMode === 'commute' ? (language === 'tl' ? 'Commute (Jeep / Bus / Trike)' : 'Public Transit (Jeep, Bus, Trike)') :
+                         (language === 'tl' ? 'Kotse o Motor (Personal Vehicle)' : 'Car or Motorcycle')}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-stone-500 mt-1">
+                      {transportMode === 'dynamic'
+                        ? (language === 'tl' 
+                            ? 'Kusang umaakma depende sa layo: lakad pag malapit, jeep/kotse pag malayo.' 
+                            : 'Automatically adapts based on proximity: walks if close, transit if farther.')
+                        : (language === 'tl'
+                            ? 'Dito nakabatay ang kalkulasyon ng minuto sa biyahe at traffic warnings.'
+                            : 'Travel duration and traffic delay warnings are calculated for this mode.')}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-stone-400 shrink-0 mt-2" />
+                </div>
+              </div>
+            </div>
+
+            {/* ======================================================= */}
+            {/* GROUP 2: PREFERRED MARKETS (Mga Paboritong Bilihan)     */}
+            {/* ======================================================= */}
+            <div className="space-y-2">
+              <div className="px-1.5">
+                <h2 className="text-[11px] font-bold uppercase tracking-wider text-stone-500">
+                  {language === 'tl' ? '🏪 Mga Paboritong Bilihan' : '🏪 Preferred Markets & Groceries'}
+                </h2>
+                <p className="text-[11px] text-stone-400 leading-tight mt-0.5">
+                  {language === 'tl' 
+                    ? 'Magkahiwalay ang palengke (sariwang karne/gulay) at supermarket (sachets, mantika, de-lata).'
+                    : 'Split into Wet Market (fresh meat/produce) and Supermarket (staples, oil, sachets).'}
+                </p>
               </div>
 
-              {includeRice && (
-                <div className="grid grid-cols-2 gap-2 pt-1">
-                  <button
-                    onClick={() => setRiceType('sinandomeng')}
-                    className={`p-2.5 rounded-xl border text-xs font-bold transition-all tap-spring ${
-                      riceType === 'sinandomeng'
-                        ? 'bg-[#B8381D] text-white border-[#B8381D]'
-                        : 'bg-stone-50 text-stone-700 border-stone-200'
-                    }`}
-                  >
-                    Sinandomeng (+₱28/half kg)
-                  </button>
-                  <button
-                    onClick={() => setRiceType('dinorado')}
-                    className={`p-2.5 rounded-xl border text-xs font-bold transition-all tap-spring ${
-                      riceType === 'dinorado'
-                        ? 'bg-[#B8381D] text-white border-[#B8381D]'
-                        : 'bg-stone-50 text-stone-700 border-stone-200'
-                    }`}
-                  >
-                    Dinorado (+₱52/1 kg)
-                  </button>
+              <div className="bg-white rounded-[24px] border border-stone-200/90 divide-y divide-stone-100 overflow-hidden shadow-2xs">
+                {/* Row 1: Preferred Wet Market (Palengke) */}
+                <div 
+                  onClick={() => openStoreMap('wetmarket')}
+                  className="p-4 flex items-start gap-3.5 cursor-pointer tap-spring hover:bg-stone-50/80 transition-colors"
+                >
+                  <div className="w-10 h-10 rounded-2xl bg-orange-50 border border-orange-100 text-[#C2410C] flex items-center justify-center shrink-0 mt-0.5">
+                    <Store className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] uppercase font-bold text-[#C2410C] bg-orange-100/70 px-2 py-0.5 rounded-md">
+                        {language === 'tl' ? 'Palengke • Wet Market' : 'Wet Market'}
+                      </span>
+                    </div>
+                    <div className="text-sm font-bold text-stone-900 truncate mt-1">
+                      {activeWetMarket.name}
+                    </div>
+                    <div className="text-xs text-stone-600 font-medium mt-0.5">
+                      {activeWetMarket.distanceKm} km • {formatStoreTravelTime(activeWetMarket, transportMode)}
+                      {activeWetMarket.trafficLevel === 'Heavy' && (
+                        <span className="text-rose-600 font-bold ml-1.5">⚠️ Mabigat ang trapiko</span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-stone-500 mt-1">
+                      {language === 'tl'
+                        ? 'Pinagbabatayan ng presyo ng sariwang baboy, manok, baka, isda, at gulay.'
+                        : 'Source for daily wholesale rates on fresh meat, fish, and vegetables.'}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-stone-400 shrink-0 mt-2" />
                 </div>
-              )}
+
+                {/* Row 2: Preferred Supermarket (Grocery) */}
+                <div 
+                  onClick={() => openStoreMap('supermarket')}
+                  className="p-4 flex items-start gap-3.5 cursor-pointer tap-spring hover:bg-stone-50/80 transition-colors"
+                >
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <ShoppingBag className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] uppercase font-bold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded-md">
+                        {language === 'tl' ? 'Supermarket • Grocery' : 'Supermarket'}
+                      </span>
+                    </div>
+                    <div className="text-sm font-bold text-stone-900 truncate mt-1">
+                      {activeSupermarket.name}
+                    </div>
+                    <div className="text-xs text-stone-600 font-medium mt-0.5">
+                      {activeSupermarket.distanceKm} km • {formatStoreTravelTime(activeSupermarket, transportMode)} • {activeSupermarket.badge}
+                    </div>
+                    <p className="text-[11px] text-stone-500 mt-1">
+                      {language === 'tl'
+                        ? 'Pinagbabatayan ng presyo ng mantika, toyo, suka, sachet seasoning, at de-lata.'
+                        : 'Source for packaged condiments, cooking oil, canned goods, and seasonings.'}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-stone-400 shrink-0 mt-2" />
+                </div>
+              </div>
             </div>
+
+            {/* ======================================================= */}
+            {/* GROUP 3: MEAL BUDGET & STAPLES (Badyet at Bigas)        */}
+            {/* ======================================================= */}
+            <div className="space-y-2">
+              <div className="px-1.5">
+                <h2 className="text-[11px] font-bold uppercase tracking-wider text-stone-500">
+                  {language === 'tl' ? '💰 Badyet at Bigas' : '💰 Meal Budget & Staples'}
+                </h2>
+                <p className="text-[11px] text-stone-400 leading-tight mt-0.5">
+                  {language === 'tl' 
+                    ? 'Limitasyon sa araw-araw na gastos at karagdagang alokasyon para sa kanin.'
+                    : 'Target daily meal expenditure cap and rice inclusion settings.'}
+                </p>
+              </div>
+
+              <div className="bg-white rounded-[24px] border border-stone-200/90 divide-y divide-stone-100 overflow-hidden shadow-2xs">
+                {/* Row 1: Target Daily Budget & Servings */}
+                <div 
+                  onClick={() => {
+                    setBudgetModalStep(1);
+                    setIsBudgetModalOpen(true);
+                  }}
+                  className="p-4 flex items-start gap-3.5 cursor-pointer tap-spring hover:bg-stone-50/80 transition-colors"
+                >
+                  <div className="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-100 text-[#B8381D] flex items-center justify-center shrink-0 mt-0.5">
+                    <Coins className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">
+                        {language === 'tl' ? 'Target na Badyet sa Pagkain' : 'Daily Meal Budget Ceiling'}
+                      </span>
+                    </div>
+                    <div className="text-base font-bold text-stone-900 mt-0.5 flex items-center gap-2">
+                      <span>₱{budgetCap.toLocaleString()} / araw</span>
+                      <span className="text-stone-300 font-normal">•</span>
+                      <span className="text-sm font-semibold text-stone-700">{servingsPax} Kasalo (Pax)</span>
+                    </div>
+                    <div className="text-xs font-semibold text-[#B8381D] mt-0.5">
+                      {language === 'tl' ? 'Tinatayang' : 'About'} ₱{Math.round(costPerPerson)} {language === 'tl' ? 'bawat tao' : 'per person'}
+                    </div>
+                    <p className="text-[11px] text-stone-500 mt-1">
+                      {language === 'tl'
+                        ? 'Sinasala ang mga ulam sa Home para siguruhing pasok sa bulsa ng pamilya.'
+                        : 'Filters recommended dishes on Home to stay strictly within your household budget.'}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-stone-400 shrink-0 mt-2" />
+                </div>
+
+                {/* Row 2: Rice Cost in Meal Calculation */}
+                <div className="p-4 space-y-3">
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-10 h-10 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 flex items-center justify-center shrink-0 mt-0.5">
+                      <Flame className="w-5 h-5 text-amber-700" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">
+                        {language === 'tl' ? 'Kalkulasyon ng Bigas' : 'Rice In Meal Calculation'}
+                      </span>
+                      <h3 className="text-sm font-bold text-stone-900 mt-0.5">
+                        {language === 'tl' ? 'Isama ang bigas sa gastos ng ulam?' : 'Factor rice into meal cost?'}
+                      </h3>
+                      <p className="text-[11px] text-stone-500 mt-0.5">
+                        {language === 'tl'
+                          ? 'Awtomatikong idinadagdag ang 1/2 kg o 1 kg na bigas sa presyo ng bawat ulam.'
+                          : 'Automatically factors 1/2 kg or 1 kg well-milled rice into each recipe budget.'}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIncludeRice(!includeRice)}
+                      className={`w-11 h-6 rounded-full transition-colors relative tap-spring shrink-0 ml-2 mt-1 ${
+                        includeRice ? 'bg-emerald-600' : 'bg-stone-300'
+                      }`}
+                      aria-label="Toggle include rice"
+                    >
+                      <div className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${
+                        includeRice ? 'left-6' : 'left-1'
+                      }`} />
+                    </button>
+                  </div>
+
+                  {includeRice && (
+                    <div className="pl-13 pt-1 border-t border-stone-100 space-y-2">
+                      <label className="text-[10px] uppercase font-bold text-stone-400 block">
+                        {language === 'tl' ? 'Piliin ang Karaniwang Bigas na Binibili:' : 'Select Your Daily Rice Variety:'}
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setRiceType('sinandomeng')}
+                          className={`p-2.5 rounded-xl border text-xs font-bold transition-all tap-spring text-left flex flex-col gap-0.5 ${
+                            riceType === 'sinandomeng'
+                              ? 'bg-[#B8381D] text-white border-[#B8381D] shadow-xs'
+                              : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
+                          }`}
+                        >
+                          <span className="leading-tight">Sinandomeng</span>
+                          <span className={`text-[10px] ${riceType === 'sinandomeng' ? 'text-white/80' : 'text-stone-400'}`}>
+                            +₱28 / half kg • Standard
+                          </span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setRiceType('dinorado')}
+                          className={`p-2.5 rounded-xl border text-xs font-bold transition-all tap-spring text-left flex flex-col gap-0.5 ${
+                            riceType === 'dinorado'
+                              ? 'bg-[#B8381D] text-white border-[#B8381D] shadow-xs'
+                              : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
+                          }`}
+                        >
+                          <span className="leading-tight">Dinorado</span>
+                          <span className={`text-[10px] ${riceType === 'dinorado' ? 'text-white/80' : 'text-stone-400'}`}>
+                            +₱52 / 1 kg • Mabango
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       )}
@@ -933,7 +1049,7 @@ export default function MoreTab() {
                 desc: language === 'tl'
                   ? 'Walang pinipiling paraan — flexible at kusang umaakma depende sa layo, trapiko, at panahon (lakad, commute, o kotse).'
                   : 'Flexible — automatically adapts travel estimates based on distance, live traffic, and convenience.',
-                icon: <Sparkles className="w-5 h-5 text-amber-500" />,
+                icon: <Navigation className="w-5 h-5 text-amber-600" />,
                 iconBg: 'bg-amber-100',
               },
               {
