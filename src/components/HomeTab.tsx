@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useHain } from '../context/HainContext';
+import { formatRiceKg } from '../types/hain';
 import { Button } from 'glisse';
 import { 
   Users, 
@@ -37,6 +38,10 @@ export default function HomeTab() {
     currencySymbol,
     setIsBudgetModalOpen,
     setBudgetModalStep,
+    riceKilos,
+    riceType,
+    totalRiceCost,
+    setIsRiceModalOpen,
     filteredRecipes,
     setActiveRecipe,
     setIsRecipeDetailOpen,
@@ -383,6 +388,54 @@ export default function HomeTab() {
               {language === 'en' ? 'Edit' : 'Baguhin'}
             </button>
           </div>
+        </div>
+
+        {/* 
+          RICE ALLOCATION QUICK ACCESS BUTTON ON HOME
+          Easy access button requested by user, Quicksand font, matched styling
+        */}
+        <div 
+          onClick={() => setIsRiceModalOpen(true)}
+          className="bg-white rounded-[24px] p-4 px-5 shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-[#E5DAC6] flex items-center justify-between tap-spring transition-all cursor-pointer hover:border-[#B8381D]/40 group"
+        >
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div 
+              style={{ backgroundColor: colorTheme.badgeBg }}
+              className="w-11 h-11 rounded-2xl text-white flex items-center justify-center shadow-xs shrink-0 transition-colors duration-300"
+            >
+              <Flame className="w-5 h-5 stroke-[2.2]" />
+            </div>
+            <div className="min-w-0">
+              <div className="font-quicksand text-[11px] font-bold uppercase tracking-[0.18em] text-stone-400 leading-none">
+                {language === 'en' ? 'RICE ALLOCATION' : 'ALOKASYON NG BIGAS'}
+              </div>
+              <div className="font-quicksand font-bold text-sm sm:text-base text-stone-900 mt-1 truncate flex items-center gap-1.5">
+                <span>{formatRiceKg(riceKilos)}</span>
+                <span className="text-stone-300">•</span>
+                <span className="text-stone-700 capitalize">{riceType}</span>
+                <span className="text-stone-300">•</span>
+                <span 
+                  style={{ color: colorTheme.accentColor }} 
+                  className="font-bold transition-colors duration-300"
+                >
+                  P{totalRiceCost}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsRiceModalOpen(true);
+            }}
+            style={{ color: colorTheme.accentColor }}
+            className="font-quicksand font-bold text-xs sm:text-[13px] tap-spring transition-colors duration-300 cursor-pointer hover:opacity-80 flex items-center gap-0.5 shrink-0 pl-2"
+          >
+            <span>{language === 'en' ? 'Adjust' : 'Baguhin'}</span>
+            <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-stone-700 group-hover:translate-x-0.5 transition-transform" />
+          </button>
         </div>
 
         {/* 

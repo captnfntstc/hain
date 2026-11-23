@@ -37,7 +37,7 @@ import {
   Navigation,
   Flame,
 } from 'lucide-react';
-import { HouseholdMember, SUPPORTED_CURRENCIES, NEARBY_WET_MARKETS, NEARBY_SUPERMARKETS, TransportMode, formatStoreTravelTime } from '../types/hain';
+import { HouseholdMember, SUPPORTED_CURRENCIES, NEARBY_WET_MARKETS, NEARBY_SUPERMARKETS, TransportMode, formatStoreTravelTime, formatRiceKg } from '../types/hain';
 import { AllergenIcon, DietaryIcon } from './FilterIcons';
 import { Button } from 'glisse';
 
@@ -85,6 +85,10 @@ export default function MoreTab() {
     userAddress,
     moreTabSubpage,
     setMoreTabSubpage,
+    riceKilos,
+    riceType,
+    totalRiceCost,
+    setIsRiceModalOpen,
   } = useHain();
 
   // Navigation Subpage State (synced with global HainContext)
@@ -107,8 +111,6 @@ export default function MoreTab() {
 
   // Palengke Settings State
   const [selectedMarket, setSelectedMarket] = useState('munoz');
-  const [includeRice, setIncludeRice] = useState(true);
-  const [riceType, setRiceType] = useState<'sinandomeng' | 'dinorado'>('sinandomeng');
   const [marketRadius, setMarketRadius] = useState(3);
 
   // App Settings State
@@ -874,70 +876,29 @@ export default function MoreTab() {
                   <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
                 </div>
 
-                {/* Row 2: Rice in Meal Cost */}
-                <div className="p-3.5 px-4 space-y-2.5">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3.5 min-w-0">
-                      <div className="w-9 h-9 rounded-xl bg-stone-100 border border-stone-200 text-amber-700 flex items-center justify-center shrink-0">
-                        <Flame className="w-4 h-4" />
+                {/* Row 2: Rice Allocation */}
+                <div 
+                  onClick={() => setIsRiceModalOpen(true)}
+                  className="p-3.5 px-4 flex items-center justify-between gap-3 cursor-pointer tap-spring hover:bg-stone-50/80 transition-colors"
+                >
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                      <Flame className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[10px] uppercase font-bold tracking-wider text-stone-400 leading-none">
+                        {language === 'tl' ? 'Alokasyon ng Bigas' : 'Rice Allocation'}
                       </div>
-                      <div className="min-w-0">
-                        <div className="text-[10px] uppercase font-bold tracking-wider text-stone-400 leading-none">
-                          {language === 'tl' ? 'Alokasyon ng Bigas' : 'Rice Allocation'}
-                        </div>
-                        <div className="text-xs sm:text-sm font-bold text-stone-900 truncate mt-1">
-                          {language === 'tl' ? 'Isama ang bigas sa gastos ng ulam' : 'Include rice in meal cost'}
-                        </div>
+                      <div className="text-xs sm:text-sm font-bold text-stone-900 truncate mt-1 flex items-center gap-2">
+                        <span>{formatRiceKg(riceKilos)}</span>
+                        <span className="text-stone-300 font-normal">•</span>
+                        <span className="capitalize">{riceType}</span>
+                        <span className="text-stone-300 font-normal">•</span>
+                        <span className="text-[#B8381D] font-bold">₱{totalRiceCost}</span>
                       </div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setIncludeRice(!includeRice)}
-                      className={`w-11 h-6 rounded-full transition-colors relative tap-spring shrink-0 ml-2 ${
-                        includeRice ? 'bg-emerald-600' : 'bg-stone-300'
-                      }`}
-                      aria-label="Toggle include rice"
-                    >
-                      <div className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${
-                        includeRice ? 'left-6' : 'left-1'
-                      }`} />
-                    </button>
                   </div>
-
-                  {includeRice && (
-                    <div className="pl-12 pt-1 border-t border-stone-100">
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setRiceType('sinandomeng')}
-                          className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all tap-spring flex items-center justify-between ${
-                            riceType === 'sinandomeng'
-                              ? 'bg-[#B8381D] text-white border-[#B8381D] shadow-xs'
-                              : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
-                          }`}
-                        >
-                          <span>Sinandomeng</span>
-                          <span className={`text-[10px] font-normal ${riceType === 'sinandomeng' ? 'text-white/80' : 'text-stone-400'}`}>
-                            +₱28
-                          </span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setRiceType('dinorado')}
-                          className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all tap-spring flex items-center justify-between ${
-                            riceType === 'dinorado'
-                              ? 'bg-[#B8381D] text-white border-[#B8381D] shadow-xs'
-                              : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
-                          }`}
-                        >
-                          <span>Dinorado</span>
-                          <span className={`text-[10px] font-normal ${riceType === 'dinorado' ? 'text-white/80' : 'text-stone-400'}`}>
-                            +₱52
-                          </span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                  <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
                 </div>
               </div>
             </div>

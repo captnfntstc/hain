@@ -25,12 +25,14 @@ import DeveloperOptionsModal from '../components/DeveloperOptionsModal';
 import RegionLocationModal from '../components/RegionLocationModal';
 import TrafficAlertPromptModal from '../components/TrafficAlertPromptModal';
 import InteractiveStoreMapModal from '../components/InteractiveStoreMapModal';
+import RiceAllocationModal from '../components/RiceAllocationModal';
 
 function MainApp() {
   const { 
     activeTab, 
     isRecipeDetailOpen, 
     isBudgetModalOpen, 
+    isRiceModalOpen,
     isCalendarPageOpen,
     isSearchOpen,
     activeCategoryPage 
@@ -60,10 +62,11 @@ function MainApp() {
       )}
 
       {/* Floating Bottom Navigation Bar (Pill) - Visible on category page too matching user mockup */}
-      {!isBudgetModalOpen && !isRecipeDetailOpen && !isCalendarPageOpen && !isSearchOpen && <BottomNavBar />}
+      {!isBudgetModalOpen && !isRiceModalOpen && !isRecipeDetailOpen && !isCalendarPageOpen && !isSearchOpen && <BottomNavBar />}
 
       {/* Full Page Picker & Overlays */}
       <BudgetModal />
+      <RiceAllocationModal />
       <FiltersModal />
       <CalendarPlannerModal />
       {isRecipeDetailOpen && <RecipeDetailScreen />}

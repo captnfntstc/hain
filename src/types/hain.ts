@@ -770,3 +770,82 @@ export const COLOR_THEMES: Record<PrimaryColorThemeId, ColorThemeConfig> = {
     previewGradient: 'from-[#EDEBE6] to-[#DCD9D1]',
   },
 };
+
+export type RiceType = 'sinandomeng' | 'dinorado' | 'jasmine' | 'brown';
+
+export interface RiceVarietyInfo {
+  id: RiceType;
+  name: string;
+  tagalogName: string;
+  grade: string;
+  pricePerKg: number;
+  descriptionTl: string;
+  descriptionEn: string;
+}
+
+export const RICE_VARIETIES: RiceVarietyInfo[] = [
+  {
+    id: 'sinandomeng',
+    name: 'Sinandomeng',
+    tagalogName: 'Sinandomeng (Regular Milled)',
+    grade: 'Regular Milled',
+    pricePerKg: 50,
+    descriptionTl: 'Karaniwang bigas para sa araw-araw, malambot at siksik.',
+    descriptionEn: 'Daily staple regular-milled rice, soft and filling.',
+  },
+  {
+    id: 'dinorado',
+    name: 'Dinorado',
+    tagalogName: 'Dinorado (Well Milled)',
+    grade: 'Well Milled',
+    pricePerKg: 56,
+    descriptionTl: 'Mabango, maputi, at pino ang lambot ng bawat butil.',
+    descriptionEn: 'Naturally fragrant, clean white, and tender grains.',
+  },
+  {
+    id: 'jasmine',
+    name: 'Jasmine / Milagrosa',
+    tagalogName: 'Jasmine / Milagrosa (Premium)',
+    grade: 'Premium Fragrant',
+    pricePerKg: 64,
+    descriptionTl: 'Extra malambot at mabangong espesyal para sa masasarap na ulam.',
+    descriptionEn: 'Fluffy and aromatic premium grain, best for rich Filipino dishes.',
+  },
+  {
+    id: 'brown',
+    name: 'Brown / Red Rice',
+    tagalogName: 'Brown / Red Rice (Whole Grain)',
+    grade: 'Whole Grain / Low GI',
+    pricePerKg: 75,
+    descriptionTl: 'Mataas sa fiber at mineral, mabuti sa kalusugan at blood sugar.',
+    descriptionEn: 'Nutrient-rich unpolished grain with lower glycemic index.',
+  },
+];
+
+export function formatRiceKg(kilos: number): string {
+  if (kilos === 0.25) return '1/4 kg';
+  if (kilos === 0.5) return '1/2 kg';
+  if (kilos === 0.75) return '3/4 kg';
+  if (kilos === 1) return '1 kg';
+  if (kilos === 1.25) return '1 1/4 kg';
+  if (kilos === 1.5) return '1 1/2 kg';
+  if (kilos === 1.75) return '1 3/4 kg';
+  if (kilos === 2) return '2 kg';
+  if (kilos === 2.5) return '2 1/2 kg';
+  if (kilos === 3) return '3 kg';
+  if (kilos === 4) return '4 kg';
+  if (kilos === 5) return '5 kg';
+  if (Number.isInteger(kilos)) return `${kilos} kg`;
+  return `${kilos.toFixed(2)} kg`;
+}
+
+export function calculateRecommendedRiceKilos(pax: number, mealCount: number = 2): number {
+  // Standard Philippine household guideline:
+  // 1 adult serving per meal ≈ 100g (0.1 kg) uncooked rice (≈ 0.5 cup raw / ~1 cup cooked).
+  // mealCount: 1 = lunch only (0.1kg/pax), 2 = lunch & dinner (0.2kg/pax), 3 = 3 meals (0.25kg/pax).
+  const ratePerPax = mealCount === 1 ? 0.1 : mealCount === 3 ? 0.25 : 0.2;
+  const rawKilos = Math.max(1, pax) * ratePerPax;
+  // Snap to nearest 0.25 kg (1/4 kg)
+  return Math.max(0.25, Math.round(rawKilos * 4) / 4);
+}
+

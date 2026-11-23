@@ -21,7 +21,12 @@ import {
   NEARBY_SUPERMARKETS,
   ALL_MAP_STORES,
   REGION_LOCATIONS,
-  MoreSubpage
+  MoreSubpage,
+  RiceType,
+  RiceVarietyInfo,
+  RICE_VARIETIES,
+  formatRiceKg,
+  calculateRecommendedRiceKilos
 } from '../types/hain';
 import { MOCK_RECIPES, PANTRY_STAPLES_LIST } from '../data/mockData';
 import { TRANSLATIONS, Language } from '../data/translations';
@@ -35,7 +40,8 @@ export type {
   ColorThemeConfig,
   TransportMode,
   MarketVenue,
-  RegionLocation
+  RegionLocation,
+  RiceType
 };
 
 interface HainContextType {
@@ -108,6 +114,18 @@ interface HainContextType {
   setIsBudgetModalOpen: (open: boolean) => void;
   budgetModalStep: 1 | 2;
   setBudgetModalStep: (step: 1 | 2) => void;
+
+  // Rice Allocation State & Modal
+  riceKilos: number;
+  setRiceKilos: (kilos: number) => void;
+  riceType: RiceType;
+  setRiceType: (type: RiceType) => void;
+  includeRiceInBudget: boolean;
+  setIncludeRiceInBudget: (include: boolean) => void;
+  isRiceModalOpen: boolean;
+  setIsRiceModalOpen: (open: boolean) => void;
+  totalRiceCost: number;
+  recommendedRiceKilos: number;
 
   // Region & Market Venues & Transpo Mode
   userRegionId: string;
@@ -488,6 +506,63 @@ export function HainProvider({ children }: { children: React.ReactNode }) {
   const [isBudgetModalOpen, setIsBudgetModalOpen] = useState<boolean>(false);
   const [budgetModalStep, setBudgetModalStep] = useState<1 | 2>(1);
 
+  // Rice Allocation State & Modal (Synced with localStorage)
+  const [riceKilos, setRiceKilosState] = useState<number>(1);
+  const [riceType, setRiceTypeState] = useState<RiceType>('sinandomeng');
+  const [includeRiceInBudget, setIncludeRiceInBudgetState] = useState<boolean>(true);
+  const [isRiceModalOpen, setIsRiceModalOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedKilos = localStorage.getItem('hain_rice_kilos');
+      if (savedKilos) {
+        const val = parseFloat(savedKilos);
+        if (!isNaN(val) && val > 0) setRiceKilosState(val);
+      }
+      const savedType = localStorage.getItem('hain_rice_type') as RiceType;
+      if (savedType && RICE_VARIETIES.some((v) => v.id === savedType)) {
+        setRiceTypeState(savedType);
+      }
+      const savedInclude = localStorage.getItem('hain_include_rice');
+      if (savedInclude !== null) {
+        setIncludeRiceInBudgetState(savedInclude === 'true');
+      }
+    }
+  }, []);
+
+  const setRiceKilos = useCallback((kilos: number) => {
+    setRiceKilosState(kilos);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('hain_rice_kilos', kilos.toString());
+    }
+  }, []);
+
+  const setRiceType = useCallback((type: RiceType) => {
+    setRiceTypeState(type);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('hain_rice_type', type);
+    }
+  }, []);
+
+  const setIncludeRiceInBudget = useCallback((inc: boolean) => {
+    setIncludeRiceInBudgetState(inc);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('hain_include_rice', inc ? 'true' : 'false');
+    }
+  }, []);
+
+  const activeRiceVariety = useMemo(() => {
+    return RICE_VARIETIES.find((v) => v.id === riceType) || RICE_VARIETIES[0];
+  }, [riceType]);
+
+  const totalRiceCost = useMemo(() => {
+    return Math.round(riceKilos * activeRiceVariety.pricePerKg);
+  }, [riceKilos, activeRiceVariety]);
+
+  const recommendedRiceKilos = useMemo(() => {
+    return calculateRecommendedRiceKilos(servingsPax);
+  }, [servingsPax]);
+
   // Search & Filters
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([
@@ -780,6 +855,16 @@ export function HainProvider({ children }: { children: React.ReactNode }) {
         setIsBudgetModalOpen,
         budgetModalStep,
         setBudgetModalStep,
+        riceKilos,
+        setRiceKilos,
+        riceType,
+        setRiceType,
+        includeRiceInBudget,
+        setIncludeRiceInBudget,
+        isRiceModalOpen,
+        setIsRiceModalOpen,
+        totalRiceCost,
+        recommendedRiceKilos,
         userRegionId,
         setUserRegionId,
         currentRegion,
