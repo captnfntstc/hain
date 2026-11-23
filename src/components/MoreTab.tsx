@@ -80,10 +80,14 @@ export default function MoreTab() {
     colorTheme,
     setIsDevOptionsOpen,
     currencySymbol,
+    userAddress,
+    moreTabSubpage,
+    setMoreTabSubpage,
   } = useHain();
 
-  // Navigation Subpage State
-  const [currentView, setCurrentView] = useState<MoreSubpage>('menu');
+  // Navigation Subpage State (synced with global HainContext)
+  const currentView = moreTabSubpage;
+  const setCurrentView = setMoreTabSubpage;
 
   // Add Member Modal State
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
@@ -752,13 +756,16 @@ export default function MoreTab() {
               className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-2 cursor-pointer tap-spring hover:border-stone-300 transition-all"
             >
               <div className="flex items-center justify-between">
-                <div>
+                <div className="min-w-0 pr-2">
                   <span className="text-[10px] uppercase font-bold text-stone-400">
-                    {language === 'tl' ? 'Kasalukuyang Lokasyon' : 'GPS Location Anchor'}
+                    {language === 'tl' ? 'Kasalukuyang Lokasyon (GPS Anchor)' : 'GPS LOCATION ANCHOR'}
                   </span>
                   <div className="text-xs font-bold text-stone-900 flex items-center gap-1.5 mt-0.5">
-                    <MapPin className="w-3.5 h-3.5 text-[#B8381D]" />
-                    <span>{currentRegion.name}</span>
+                    <MapPin className="w-3.5 h-3.5 text-[#B8381D] shrink-0" />
+                    <span className="truncate">{userAddress}</span>
+                  </div>
+                  <div className="text-[11px] text-stone-500 font-medium mt-0.5 pl-5">
+                    {language === 'tl' ? 'Pindutin upang buksan ang address map' : 'Tap to open interactive address map'}
                   </div>
                 </div>
                 <ChevronRight className="w-5 h-5 text-stone-400 shrink-0" />

@@ -20,7 +20,8 @@ import {
   NEARBY_WET_MARKETS,
   NEARBY_SUPERMARKETS,
   ALL_MAP_STORES,
-  REGION_LOCATIONS
+  REGION_LOCATIONS,
+  MoreSubpage
 } from '../types/hain';
 import { MOCK_RECIPES, PANTRY_STAPLES_LIST } from '../data/mockData';
 import { TRANSLATIONS, Language } from '../data/translations';
@@ -112,6 +113,12 @@ interface HainContextType {
   userRegionId: string;
   setUserRegionId: (id: string) => void;
   currentRegion: RegionLocation;
+  userAddress: string;
+  setUserAddress: (addr: string) => void;
+  userPinCoordinates: { x: number; y: number; lat: number; lng: number };
+  setUserPinCoordinates: (coords: { x: number; y: number; lat: number; lng: number }) => void;
+  moreTabSubpage: MoreSubpage;
+  setMoreTabSubpage: (sub: MoreSubpage) => void;
   isRegionModalOpen: boolean;
   setIsRegionModalOpen: (open: boolean) => void;
   preferredWetMarketId: string;
@@ -277,8 +284,16 @@ export function HainProvider({ children }: { children: React.ReactNode }) {
     }
   }, [setColorThemeId]);
 
-  // Region & Location (Defaults to Muñoz / Balintawak, QC)
+  // Region & Location (Defaults to 54 Dangay St, Muñoz / Balintawak, QC)
   const [userRegionId, setUserRegionId] = useState<string>('munoz-balintawak');
+  const [userAddress, setUserAddress] = useState<string>('54 Dangay St, Veterans Village, Project 7, Quezon City');
+  const [userPinCoordinates, setUserPinCoordinates] = useState<{ x: number; y: number; lat: number; lng: number }>({
+    x: 500,
+    y: 500,
+    lat: 14.6565,
+    lng: 121.0189,
+  });
+  const [moreTabSubpage, setMoreTabSubpage] = useState<MoreSubpage>('menu');
   const [isRegionModalOpen, setIsRegionModalOpen] = useState<boolean>(false);
 
   const currentRegion = useMemo(() => {
@@ -768,6 +783,12 @@ export function HainProvider({ children }: { children: React.ReactNode }) {
         userRegionId,
         setUserRegionId,
         currentRegion,
+        userAddress,
+        setUserAddress,
+        userPinCoordinates,
+        setUserPinCoordinates,
+        moreTabSubpage,
+        setMoreTabSubpage,
         isRegionModalOpen,
         setIsRegionModalOpen,
         preferredWetMarketId,

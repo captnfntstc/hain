@@ -88,6 +88,120 @@ export const SUPPORTED_CURRENCIES: CurrencyConfig[] = [
 
 export type ActiveTab = 'home' | 'search' | 'list' | 'kusina' | 'leftovers' | 'more';
 
+export type MoreSubpage = 'menu' | 'profile' | 'household' | 'palengke' | 'settings' | 'language' | 'currency' | 'transport';
+
+export interface AddressAnchorItem {
+  id: string;
+  name: string;
+  shortName: string;
+  barangayOrDistrict: string;
+  city: string;
+  mapX: number;
+  mapY: number;
+  lat: number;
+  lng: number;
+  landmarkNote: string;
+}
+
+export const PRESET_ADDRESS_ANCHORS: AddressAnchorItem[] = [
+  {
+    id: 'dangay-54',
+    name: '54 Dangay St, Veterans Village, Project 7, Quezon City',
+    shortName: '54 Dangay St',
+    barangayOrDistrict: 'Veterans Village, Project 7',
+    city: 'Quezon City',
+    mapX: 500,
+    mapY: 500,
+    lat: 14.6565,
+    lng: 121.0189,
+    landmarkNote: '250m mula sa Muñoz Market • Katabi ng FPJ Ave',
+  },
+  {
+    id: 'roosevelt-edsa',
+    name: 'Roosevelt Ave (FPJ Ave) cor EDSA, Muñoz, Quezon City',
+    shortName: 'Roosevelt / EDSA',
+    barangayOrDistrict: 'Muñoz / Veterans Village',
+    city: 'Quezon City',
+    mapX: 515,
+    mapY: 480,
+    lat: 14.6575,
+    lng: 121.0198,
+    landmarkNote: 'LRT-1 FPJ Station & Muñoz Market junction',
+  },
+  {
+    id: 'bansalangin-proj7',
+    name: 'Bansalangin St, Veterans Village, Project 7, Quezon City',
+    shortName: 'Bansalangin St',
+    barangayOrDistrict: 'Veterans Village',
+    city: 'Quezon City',
+    mapX: 480,
+    mapY: 515,
+    lat: 14.6558,
+    lng: 121.0180,
+    landmarkNote: 'Residential inner street near Muñoz',
+  },
+  {
+    id: 'shorthorn-proj8',
+    name: '12 Short Horn St, Project 8, Quezon City',
+    shortName: 'Short Horn St',
+    barangayOrDistrict: 'Project 8 / Bahay Toro',
+    city: 'Quezon City',
+    mapX: 430,
+    mapY: 530,
+    lat: 14.6592,
+    lng: 121.0235,
+    landmarkNote: 'Tapat ng Dali Everyday Grocery Short Horn',
+  },
+  {
+    id: 'congressional-proj8',
+    name: 'Congressional Ave near EDSA, Project 8, Quezon City',
+    shortName: 'Congressional Ave',
+    barangayOrDistrict: 'Project 8',
+    city: 'Quezon City',
+    mapX: 680,
+    mapY: 340,
+    lat: 14.6645,
+    lng: 121.0310,
+    landmarkNote: 'Malapit sa S&R Membership Shopping',
+  },
+  {
+    id: 'balintawak-bonifacio',
+    name: 'A. Bonifacio Ave, Balintawak, Quezon City',
+    shortName: 'Balintawak / Cloverleaf',
+    barangayOrDistrict: 'Balintawak / Balingasa',
+    city: 'Quezon City',
+    mapX: 250,
+    mapY: 280,
+    lat: 14.6580,
+    lng: 121.0040,
+    landmarkNote: 'Katabi ng Balintawak Cloverleaf Bagsakan',
+  },
+  {
+    id: 'frisco-delmonte',
+    name: 'Del Monte Ave cor Roosevelt, San Francisco Del Monte, QC',
+    shortName: 'Frisco / Del Monte',
+    barangayOrDistrict: 'San Francisco Del Monte',
+    city: 'Quezon City',
+    mapX: 380,
+    mapY: 660,
+    lat: 14.6420,
+    lng: 121.0120,
+    landmarkNote: 'Malapit sa Frisco Talipapa at San Pedro Bautista',
+  },
+  {
+    id: 'north-ave-sm',
+    name: 'North Avenue cor EDSA, Quezon City',
+    shortName: 'North Avenue / SM',
+    barangayOrDistrict: 'Bagong Pag-asa',
+    city: 'Quezon City',
+    mapX: 740,
+    mapY: 580,
+    lat: 14.6530,
+    lng: 121.0325,
+    landmarkNote: 'SM City North EDSA Complex & MRT-3',
+  },
+];
+
 export interface HouseholdMember {
   id: string;
   name: string;
