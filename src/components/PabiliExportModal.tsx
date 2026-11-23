@@ -12,6 +12,9 @@ export default function PabiliExportModal() {
     activeRecipe,
     calculateRecipeBasket,
     budgetCap,
+    language,
+    activeWetMarket,
+    activeSupermarket,
   } = useHain();
 
   const [copied, setCopied] = useState(false);
@@ -23,16 +26,20 @@ export default function PabiliExportModal() {
   const palengkeItems = activeRecipe.ingredients.filter((i) => i.storeType === 'palengke');
   const supermarketItems = activeRecipe.ingredients.filter((i) => i.storeType === 'supermarket');
 
+  const recipeTitleLine = language === 'tl'
+    ? `Ihahain: *${activeRecipe.localName || activeRecipe.title}*`
+    : `Ihahain: *${activeRecipe.localName}* (${activeRecipe.title})`;
+
   const pabiliText = `🛒 *PABILI PO (Hain Ulam Planner)*
-Ihahain: *${activeRecipe.localName}* (${activeRecipe.title})
+${recipeTitleLine}
 Target Budget Cap: ₱${budgetCap.toLocaleString()}.00
 
-📍 *STOP 1: Muñoz Wet Market (Palengke)*
+📍 *STOP 1: ${activeWetMarket.name}*
 ${palengkeItems.map((i) => `• ${i.localName} ~ ₱${i.actualPrice || i.estimatedPrice}.00`).join('\n')}
 
 ${
   supermarketItems.length > 0
-    ? `📍 *STOP 2: Puregold Muñoz (Supermarket Spillover)*\n${supermarketItems
+    ? `📍 *STOP 2: ${activeSupermarket.name}*\n${supermarketItems
         .map((i) => `• ${i.localName} ~ ₱${i.actualPrice || i.estimatedPrice}.00`)
         .join('\n')}\n`
     : ''

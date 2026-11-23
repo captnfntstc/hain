@@ -28,9 +28,13 @@ import {
   SlidersHorizontal,
   BookmarkCheck,
   Coins,
-  Palette
+  Palette,
+  Footprints,
+  Bus,
+  Car,
+  ShoppingBag
 } from 'lucide-react';
-import { HouseholdMember, SUPPORTED_CURRENCIES } from '../types/hain';
+import { HouseholdMember, SUPPORTED_CURRENCIES, NEARBY_WET_MARKETS, NEARBY_SUPERMARKETS, TransportMode } from '../types/hain';
 import { AllergenIcon, DietaryIcon } from './FilterIcons';
 import { Button } from 'glisse';
 
@@ -54,6 +58,14 @@ export default function MoreTab() {
     setThemeMode,
     setIsBudgetModalOpen,
     setBudgetModalStep,
+    preferredWetMarketId,
+    selectWetMarketWithCheck,
+    preferredSupermarketId,
+    selectSupermarketWithCheck,
+    transportMode,
+    setTransportMode,
+    currentRegion,
+    setIsRegionModalOpen,
     t,
     language,
     setLanguage,
@@ -731,7 +743,80 @@ export default function MoreTab() {
               </div>
             </div>
 
-            {/* Primary Wet Market Picker */}
+            {/* GPS Region & Neighborhood Anchor Card */}
+            <div className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-stone-400">
+                    {language === 'tl' ? 'Kasalukuyang Lokasyon' : 'GPS Location Anchor'}
+                  </span>
+                  <div className="text-xs font-bold text-stone-900 flex items-center gap-1.5 mt-0.5">
+                    <MapPin className="w-3.5 h-3.5 text-[#B8381D]" />
+                    <span>{currentRegion.name}</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsRegionModalOpen(true)}
+                  className="text-xs font-bold text-[#B8381D] bg-[#FDECE8] px-3 py-1.5 rounded-lg tap-spring hover:bg-[#B8381D]/15 transition-colors"
+                >
+                  {language === 'tl' ? 'Palitan' : 'Change'}
+                </button>
+              </div>
+            </div>
+
+            {/* Mode of Transportation Selector */}
+            <div className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-3">
+              <div>
+                <h3 className="font-sans font-bold text-xs text-stone-900">
+                  {t.market_transpo_title}
+                </h3>
+                <p className="text-[11px] text-stone-500">
+                  {t.market_transpo_sub}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  {
+                    id: 'walk' as TransportMode,
+                    label: t.market_transpo_walk,
+                    icon: <Footprints className="w-4 h-4" />,
+                  },
+                  {
+                    id: 'commute' as TransportMode,
+                    label: t.market_transpo_commute,
+                    icon: <Bus className="w-4 h-4" />,
+                  },
+                  {
+                    id: 'car' as TransportMode,
+                    label: t.market_transpo_car,
+                    icon: <Car className="w-4 h-4" />,
+                  },
+                ].map((m) => {
+                  const isSelected = transportMode === m.id;
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setTransportMode(m.id)}
+                      className={`p-2.5 rounded-xl border text-center transition-all tap-spring flex flex-col items-center justify-center gap-1 ${
+                        isSelected
+                          ? 'bg-[#B8381D] text-white border-[#B8381D] shadow-xs'
+                          : 'bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100'
+                      }`}
+                    >
+                      <div className={isSelected ? 'text-white' : 'text-[#B8381D]'}>
+                        {m.icon}
+                      </div>
+                      <span className="text-[11px] font-bold leading-tight">{m.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Preferred Wet Market (Palengke) Picker */}
             <div className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-3">
               <div>
                 <h3 className="font-sans font-bold text-xs text-stone-900">
@@ -743,38 +828,126 @@ export default function MoreTab() {
               </div>
 
               <div className="space-y-2">
-                {[
-                  {
-                    id: 'munoz',
-                    name: 'Muñoz Public Wet Market',
-                    dist: '1.2 km distance',
-                    badge: 'DA Bantay Presyo NCR',
-                  },
-                  {
-                    id: 'balintawak',
-                    name: 'Balintawak Cloverleaf Market',
-                    dist: '2.7 km distance',
-                    badge: 'Wholesale Rates',
-                  },
-                ].map((m) => (
-                  <div
-                    key={m.id}
-                    onClick={() => setSelectedMarket(m.id)}
-                    className={`p-3 rounded-xl border transition-all cursor-pointer tap-spring flex items-center justify-between ${
-                      selectedMarket === m.id
-                        ? 'bg-emerald-50 border-emerald-300'
-                        : 'bg-stone-50 border-stone-200'
-                    }`}
-                  >
-                    <div>
-                      <div className="text-xs font-bold text-stone-900">{m.name}</div>
-                      <div className="text-[11px] text-stone-500 mt-0.5">{m.dist}</div>
+                {NEARBY_WET_MARKETS.map((m) => {
+                  const isSelected = preferredWetMarketId === m.id;
+                  const travelTime =
+                    transportMode === 'walk'
+                      ? `${m.walkMinutes} mins lakad`
+                      : transportMode === 'commute'
+                      ? `~${m.commuteMinutes} mins commute (₱${m.commuteFare})`
+                      : `~${m.driveMinutes} mins biyahe`;
+
+                  return (
+                    <div
+                      key={m.id}
+                      onClick={() => selectWetMarketWithCheck(m.id)}
+                      className={`p-3 rounded-xl border transition-all cursor-pointer tap-spring ${
+                        isSelected
+                          ? 'bg-amber-50/80 border-[#B8381D] shadow-xs'
+                          : 'bg-stone-50 border-stone-200 hover:bg-stone-100/60'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-stone-900 truncate">{m.name}</span>
+                            {isSelected && (
+                              <span className="w-3.5 h-3.5 rounded-full bg-[#B8381D] text-white flex items-center justify-center shrink-0">
+                                <Check className="w-2.5 h-2.5 stroke-[3]" />
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[11px] text-stone-500 mt-0.5">
+                            {m.distanceKm} km • {travelTime}
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-1.5">
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                              m.trafficLevel === 'Heavy'
+                                ? 'bg-rose-100 text-rose-800'
+                                : 'bg-emerald-100 text-emerald-800'
+                            }`}>
+                              Trapiko: {m.trafficLevel}
+                            </span>
+                            <span className="text-[10px] text-stone-500 bg-stone-100 px-2 py-0.5 rounded-full">
+                              {m.badge}
+                            </span>
+                          </div>
+                        </div>
+
+                        {m.trafficLevel === 'Heavy' && (
+                          <div className="flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-md shrink-0">
+                            <AlertTriangle className="w-3 h-3 text-amber-600" />
+                            <span>Trapiko</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <span className="text-[10px] font-bold text-emerald-800 bg-white px-2 py-0.5 rounded-md border border-emerald-200">
-                      {m.badge}
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Preferred Supermarket Picker */}
+            <div className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-3">
+              <div>
+                <h3 className="font-sans font-bold text-xs text-stone-900">
+                  {t.market_primary_super_title}
+                </h3>
+                <p className="text-[11px] text-stone-500">
+                  {t.market_primary_super_sub}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                {NEARBY_SUPERMARKETS.map((s) => {
+                  const isSelected = preferredSupermarketId === s.id;
+                  const travelTime =
+                    transportMode === 'walk'
+                      ? `${s.walkMinutes} mins lakad`
+                      : transportMode === 'commute'
+                      ? `~${s.commuteMinutes} mins commute`
+                      : `~${s.driveMinutes} mins biyahe`;
+
+                  return (
+                    <div
+                      key={s.id}
+                      onClick={() => selectSupermarketWithCheck(s.id)}
+                      className={`p-3 rounded-xl border transition-all cursor-pointer tap-spring ${
+                        isSelected
+                          ? 'bg-emerald-50/80 border-emerald-600 shadow-xs'
+                          : 'bg-stone-50 border-stone-200 hover:bg-stone-100/60'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-stone-900 truncate">{s.name}</span>
+                            {isSelected && (
+                              <span className="w-3.5 h-3.5 rounded-full bg-emerald-700 text-white flex items-center justify-center shrink-0">
+                                <Check className="w-2.5 h-2.5 stroke-[3]" />
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[11px] text-stone-500 mt-0.5">
+                            {s.distanceKm} km • {travelTime}
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-1.5">
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                              s.trafficLevel === 'Heavy'
+                                ? 'bg-rose-100 text-rose-800'
+                                : 'bg-emerald-100 text-emerald-800'
+                            }`}>
+                              Trapiko: {s.trafficLevel}
+                            </span>
+                            <span className="text-[10px] text-stone-500 bg-stone-100 px-2 py-0.5 rounded-full">
+                              {s.badge}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -1308,12 +1481,12 @@ export default function MoreTab() {
                   onChange={(e) => setNewMemberRole(e.target.value)}
                   className="w-full h-11 px-3 rounded-xl bg-white border border-stone-200 text-xs font-sans text-stone-900 shadow-sm"
                 >
-                  <option value="Partner">{language === 'tl' ? 'Katuwang (Partner / Asawa)' : 'Partner (Spouse / Husband / Wife)'}</option>
+                  <option value="Partner">{language === 'tl' ? 'Katuwang / Asawa' : 'Partner (Spouse / Husband / Wife)'}</option>
                   <option value="Parent">{language === 'tl' ? 'Magulang' : 'Parent'}</option>
                   <option value="Child">{language === 'tl' ? 'Anak' : 'Child'}</option>
                   <option value="Grandparent">{language === 'tl' ? 'Lolo / Lola' : 'Grandparent'}</option>
                   <option value="Relative">{language === 'tl' ? 'Kamag-anak' : 'Relative'}</option>
-                  <option value="Others">{language === 'tl' ? 'Iba pa (Housemate / Kasama)' : 'Others (Housemate / Guest)'}</option>
+                  <option value="Others">{language === 'tl' ? 'Iba Pa / Kasama sa Bahay' : 'Others (Housemate / Guest)'}</option>
                 </select>
               </div>
 

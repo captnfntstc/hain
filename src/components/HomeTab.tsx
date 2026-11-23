@@ -14,6 +14,8 @@ import {
   Star,
   Sparkles,
   ChevronRight,
+  ChevronDown,
+  MapPin,
   RotateCcw,
   Ham,
   Drumstick,
@@ -48,6 +50,8 @@ export default function HomeTab() {
     setIsFamilyShieldEnabled,
     isCalendarPageOpen,
     setIsCalendarPageOpen,
+    currentRegion,
+    setIsRegionModalOpen,
     isSearchOpen,
     setIsSearchOpen,
     setIsFiltersModalOpen,
@@ -209,20 +213,24 @@ export default function HomeTab() {
             H A I N
           </span>
           
-          {/* Dedicated Calendar Page Button positioned on top right where flag was */}
+          {/* Region Picker Button on top right (Replacing the previous calendar position) */}
           <button
             type="button"
-            onClick={() => setIsCalendarPageOpen(true)}
-            aria-label="Open Meal Calendar"
-            title="Open Meal Calendar"
+            onClick={() => setIsRegionModalOpen(true)}
+            aria-label={language === 'tl' ? 'Pumili ng Rehiyon at Palengke' : 'Select Region & Market'}
+            title={currentRegion.name}
             style={{ 
               borderColor: colorTheme.headerIconBorder,
               color: colorTheme.headerText,
-              backgroundColor: colorTheme.headerText === '#FFFFFF' ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.08)'
+              backgroundColor: colorTheme.headerText === '#FFFFFF' ? 'rgba(255, 255, 255, 0.18)' : 'rgba(0, 0, 0, 0.08)'
             }}
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center hover:opacity-85 active:scale-95 transition-all border backdrop-blur-sm shadow-sm tap-spring shrink-0"
+            className="h-9 px-3 rounded-full flex items-center gap-1.5 hover:opacity-85 active:scale-95 transition-all border backdrop-blur-md shadow-xs tap-spring shrink-0"
           >
-            <CalendarIcon className="w-4 h-4" />
+            <MapPin className="w-3.5 h-3.5 shrink-0" />
+            <span className="text-[11px] font-bold font-sans tracking-tight">
+              {currentRegion.shortName}
+            </span>
+            <ChevronDown className="w-3 h-3 opacity-70 shrink-0" />
           </button>
         </div>
 
@@ -250,34 +258,50 @@ export default function HomeTab() {
           </h1>
         </div>
 
-        {/* Magnetized Full-Width Search Bar */}
-        <div 
-          onClick={() => setIsSearchOpen(true)}
-          className={`relative w-full cursor-pointer tap-spring bg-white rounded-full flex items-center shadow-md transition-all duration-200 ${
-            isScrolled ? 'h-10 px-3.5 shadow-lg' : 'h-12 sm:h-13 px-4'
-          }`}
-        >
-          <SearchIcon className={`${isScrolled ? 'w-4 h-4' : 'w-5 h-5'} text-stone-400 shrink-0 pointer-events-none`} />
-          <input
-            type="text"
-            readOnly
+        {/* Search Bar Row with Dedicated Calendar Button Beside It */}
+        <div className="flex items-center gap-2.5 w-full">
+          {/* Magnetized Full-Width Search Bar */}
+          <div 
             onClick={() => setIsSearchOpen(true)}
-            onFocus={() => setIsSearchOpen(true)}
-            value=""
-            placeholder={activePlaceholder}
-            className="w-full bg-transparent pl-3 pr-8 text-stone-900 text-sm sm:text-base font-sans font-medium focus:outline-none placeholder:text-stone-400 cursor-pointer"
-          />
-          <button 
-            type="button" 
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsSearchOpen(true);
-            }}
-            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 tap-spring p-1"
-            title="Voice Search"
-            aria-label="Voice Search"
+            className={`relative flex-1 cursor-pointer tap-spring bg-white rounded-full flex items-center shadow-md transition-all duration-200 ${
+              isScrolled ? 'h-10 px-3.5 shadow-lg' : 'h-12 sm:h-13 px-4'
+            }`}
           >
-            <Mic className={`${isScrolled ? 'w-4 h-4' : 'w-5 h-5'}`} />
+            <SearchIcon className={`${isScrolled ? 'w-4 h-4' : 'w-5 h-5'} text-stone-400 shrink-0 pointer-events-none`} />
+            <input
+              type="text"
+              readOnly
+              onClick={() => setIsSearchOpen(true)}
+              onFocus={() => setIsSearchOpen(true)}
+              value=""
+              placeholder={activePlaceholder}
+              className="w-full bg-transparent pl-3 pr-8 text-stone-900 text-sm sm:text-base font-sans font-medium focus:outline-none placeholder:text-stone-400 cursor-pointer"
+            />
+            <button 
+              type="button" 
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsSearchOpen(true);
+              }}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 tap-spring p-1"
+              title="Voice Search"
+              aria-label="Voice Search"
+            >
+              <Mic className={`${isScrolled ? 'w-4 h-4' : 'w-5 h-5'}`} />
+            </button>
+          </div>
+
+          {/* Calendar Button Moved Beside Search Bar */}
+          <button
+            type="button"
+            onClick={() => setIsCalendarPageOpen(true)}
+            aria-label={language === 'tl' ? 'Buksan ang Meal Calendar' : 'Open Meal Calendar'}
+            title={language === 'tl' ? 'Meal Planner Calendar' : 'Meal Planner Calendar'}
+            className={`${
+              isScrolled ? 'w-10 h-10' : 'w-12 h-12 sm:w-13 sm:h-13'
+            } rounded-full bg-white text-stone-800 shadow-md flex items-center justify-center tap-spring hover:bg-stone-50 transition-all shrink-0 active:scale-95 border border-stone-100 group`}
+          >
+            <CalendarIcon className={`${isScrolled ? 'w-4 h-4' : 'w-5 h-5'} text-[#B8381D] group-hover:scale-110 transition-transform`} />
           </button>
         </div>
       </section>

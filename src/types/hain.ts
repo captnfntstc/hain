@@ -193,6 +193,243 @@ export interface PantryStapleItem {
 
 export type PrimaryColorThemeId = 'warm-red' | 'sage-green' | 'warm-yellow' | 'off-white';
 
+export type TransportMode = 'walk' | 'commute' | 'car';
+
+export interface MarketVenue {
+  id: string;
+  name: string;
+  shortName: string;
+  type: 'wetmarket' | 'supermarket';
+  distanceKm: number;
+  distanceMeters: number;
+  walkMinutes: number;
+  commuteMinutes: number;
+  driveMinutes: number;
+  walkability: 'High' | 'Moderate' | 'Low';
+  walkabilityDesc: string;
+  trafficLevel: 'Light' | 'Moderate' | 'Heavy';
+  trafficDesc: string;
+  commuteFare: number;
+  address: string;
+  badge: string;
+  wholesaleRate: boolean;
+  commonAlternativeId?: string;
+  alternativeReason?: string;
+}
+
+export interface RegionLocation {
+  id: string;
+  name: string;
+  shortName: string;
+  region: string;
+  provinceOrCity: string;
+  lat: number;
+  lng: number;
+  isDefault?: boolean;
+}
+
+export const NEARBY_WET_MARKETS: MarketVenue[] = [
+  {
+    id: 'munoz',
+    name: 'Muñoz Public Wet Market',
+    shortName: 'Muñoz Palengke',
+    type: 'wetmarket',
+    distanceKm: 0.45,
+    distanceMeters: 450,
+    walkMinutes: 6,
+    commuteMinutes: 5,
+    driveMinutes: 4,
+    walkability: 'High',
+    walkabilityDesc: '6 mins walk • Safe sidewalk & pedestrian crossing',
+    trafficLevel: 'Light',
+    trafficDesc: 'Light interior market traffic',
+    commuteFare: 13,
+    address: 'Roosevelt Ave cor EDSA, Quezon City',
+    badge: 'DA Bantay Presyo Partner',
+    wholesaleRate: false,
+  },
+  {
+    id: 'balintawak',
+    name: 'Balintawak Cloverleaf Bagsakan',
+    shortName: 'Balintawak Market',
+    type: 'wetmarket',
+    distanceKm: 1.8,
+    distanceMeters: 1800,
+    walkMinutes: 25,
+    commuteMinutes: 28,
+    driveMinutes: 18,
+    walkability: 'Low',
+    walkabilityDesc: '25 mins walk along busy EDSA highway & footbridges',
+    trafficLevel: 'Heavy',
+    trafficDesc: 'Heavy traffic at EDSA-Cloverleaf bottleneck',
+    commuteFare: 15,
+    address: 'A. Bonifacio Ave, Balintawak, Quezon City',
+    badge: 'Wholesale Bagsakan (15-20% Cheaper)',
+    wholesaleRate: true,
+    commonAlternativeId: 'munoz',
+    alternativeReason: 'Muñoz Public Wet Market is only 450m away (6 mins walk, zero traffic delay) with DA Bantay Presyo SRP rates.',
+  },
+  {
+    id: 'frisco',
+    name: 'Frisco Market (San Francisco del Monte)',
+    shortName: 'Frisco Palengke',
+    type: 'wetmarket',
+    distanceKm: 1.4,
+    distanceMeters: 1400,
+    walkMinutes: 18,
+    commuteMinutes: 12,
+    driveMinutes: 8,
+    walkability: 'Moderate',
+    walkabilityDesc: '18 mins walk through residential side-streets',
+    trafficLevel: 'Moderate',
+    trafficDesc: 'Moderate neighborhood traffic',
+    commuteFare: 25,
+    address: 'Del Monte Ave, San Francisco del Monte, QC',
+    badge: 'Talipapa & Neighborhood Cuts',
+    wholesaleRate: false,
+    commonAlternativeId: 'munoz',
+    alternativeReason: 'Muñoz Public Wet Market is nearer (450m vs 1.4km) with zero transfer.',
+  },
+];
+
+export const NEARBY_SUPERMARKETS: MarketVenue[] = [
+  {
+    id: 'puregold-munoz',
+    name: 'Puregold Price Club Muñoz',
+    shortName: 'Puregold Muñoz',
+    type: 'supermarket',
+    distanceKm: 0.35,
+    distanceMeters: 350,
+    walkMinutes: 5,
+    commuteMinutes: 4,
+    driveMinutes: 3,
+    walkability: 'High',
+    walkabilityDesc: '5 mins walk • Paved pedestrian walkway',
+    trafficLevel: 'Light',
+    trafficDesc: 'Smooth local access',
+    commuteFare: 13,
+    address: 'EDSA near Congressional Ave, Quezon City',
+    badge: 'Best for Sachets, Condiments & Rice',
+    wholesaleRate: false,
+  },
+  {
+    id: 'waltermart-munoz',
+    name: 'WalterMart Supermarket North EDSA',
+    shortName: 'WalterMart Muñoz',
+    type: 'supermarket',
+    distanceKm: 0.5,
+    distanceMeters: 500,
+    walkMinutes: 7,
+    commuteMinutes: 5,
+    driveMinutes: 4,
+    walkability: 'High',
+    walkabilityDesc: '7 mins walk • Direct mall access',
+    trafficLevel: 'Light',
+    trafficDesc: 'Standard mall perimeter flow',
+    commuteFare: 13,
+    address: 'EDSA cor Roosevelt Ave, Quezon City',
+    badge: 'Air-conditioned Quick Grocery',
+    wholesaleRate: false,
+  },
+  {
+    id: 'sm-cloverleaf',
+    name: 'SM Supermarket Cloverleaf',
+    shortName: 'SM Cloverleaf',
+    type: 'supermarket',
+    distanceKm: 1.9,
+    distanceMeters: 1900,
+    walkMinutes: 28,
+    commuteMinutes: 30,
+    driveMinutes: 20,
+    walkability: 'Low',
+    walkabilityDesc: '28 mins walk along EDSA highway choke points',
+    trafficLevel: 'Heavy',
+    trafficDesc: 'Heavy EDSA-North Expressway flyover gridlock',
+    commuteFare: 15,
+    address: 'A. Bonifacio Ave, Balingasa, Quezon City',
+    badge: 'Complete Department & Supermarket',
+    wholesaleRate: false,
+    commonAlternativeId: 'puregold-munoz',
+    alternativeReason: 'Puregold Muñoz is only 350m away (5 mins walk, zero traffic delay).',
+  },
+];
+
+export const REGION_LOCATIONS: RegionLocation[] = [
+  {
+    id: 'munoz-balintawak',
+    name: 'Muñoz / Balintawak, Quezon City',
+    shortName: 'Muñoz, QC',
+    region: 'NCR',
+    provinceOrCity: 'Quezon City',
+    lat: 14.6575,
+    lng: 121.0210,
+    isDefault: true,
+  },
+  {
+    id: 'cubao-qc',
+    name: 'Cubao / Farmers Market, Quezon City',
+    shortName: 'Cubao, QC',
+    region: 'NCR',
+    provinceOrCity: 'Quezon City',
+    lat: 14.6195,
+    lng: 121.0510,
+  },
+  {
+    id: 'divisoria-manila',
+    name: 'Divisoria / Tondo, City of Manila',
+    shortName: 'Divisoria, Manila',
+    region: 'NCR',
+    provinceOrCity: 'Manila',
+    lat: 14.6042,
+    lng: 120.9708,
+  },
+  {
+    id: 'marikina-city',
+    name: 'Marikina Public Market',
+    shortName: 'Marikina City',
+    region: 'NCR',
+    provinceOrCity: 'Marikina',
+    lat: 14.6333,
+    lng: 121.0967,
+  },
+  {
+    id: 'pampanga-san-fernando',
+    name: 'San Fernando Public Market, Pampanga',
+    shortName: 'Pampanga',
+    region: 'Region III',
+    provinceOrCity: 'Pampanga',
+    lat: 15.0285,
+    lng: 120.6896,
+  },
+  {
+    id: 'antipolo-rizal',
+    name: 'Antipolo City Public Market, Rizal',
+    shortName: 'Antipolo, Rizal',
+    region: 'Region IV-A',
+    provinceOrCity: 'Rizal',
+    lat: 14.5842,
+    lng: 121.1764,
+  },
+  {
+    id: 'cebu-carbon',
+    name: 'Carbon Market, Cebu City',
+    shortName: 'Cebu City',
+    region: 'Region VII',
+    provinceOrCity: 'Cebu',
+    lat: 10.2929,
+    lng: 123.8990,
+  },
+  {
+    id: 'davao-bankerohan',
+    name: 'Bankerohan Public Market, Davao City',
+    shortName: 'Davao City',
+    region: 'Region XI',
+    provinceOrCity: 'Davao del Sur',
+    lat: 7.0673,
+    lng: 125.6033,
+  },
+];
+
 export interface ColorThemeConfig {
   id: PrimaryColorThemeId;
   name: string;

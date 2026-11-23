@@ -201,9 +201,11 @@ export default function KusinaTab() {
                     <h3 className="font-sans font-bold text-sm text-stone-900">
                       {language === 'en' ? item.name : item.localName}
                     </h3>
-                    <span className="text-[10px] text-stone-400 font-medium">
-                      ({language === 'en' ? item.localName : item.name})
-                    </span>
+                    {language === 'en' && item.localName && (
+                      <span className="text-[10px] text-stone-400 font-medium">
+                        ({item.localName})
+                      </span>
+                    )}
                   </div>
                   <p className="text-[11px] text-stone-500 mt-0.5">
                     Est. Standard: {item.unit}

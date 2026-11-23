@@ -22,6 +22,8 @@ import CalendarPlannerModal from '../components/CalendarPlannerModal';
 import CalendarHistoryPage from '../components/CalendarHistoryPage';
 import CategoryDishesPage from '../components/CategoryDishesPage';
 import DeveloperOptionsModal from '../components/DeveloperOptionsModal';
+import RegionLocationModal from '../components/RegionLocationModal';
+import TrafficAlertPromptModal from '../components/TrafficAlertPromptModal';
 
 function MainApp() {
   const { 
@@ -68,6 +70,8 @@ function MainApp() {
       <PabiliExportModal />
       <PadeliverModal />
       <DeveloperOptionsModal />
+      <RegionLocationModal />
+      <TrafficAlertPromptModal />
     </div>
   );
 }

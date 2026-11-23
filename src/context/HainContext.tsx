@@ -13,12 +13,28 @@ import {
   SUPPORTED_CURRENCIES,
   PrimaryColorThemeId,
   ColorThemeConfig,
-  COLOR_THEMES
+  COLOR_THEMES,
+  TransportMode,
+  MarketVenue,
+  RegionLocation,
+  NEARBY_WET_MARKETS,
+  NEARBY_SUPERMARKETS,
+  REGION_LOCATIONS
 } from '../types/hain';
 import { MOCK_RECIPES, PANTRY_STAPLES_LIST } from '../data/mockData';
 import { TRANSLATIONS, Language } from '../data/translations';
 
-export type { ActiveTab, Language, ThemeMode, CurrencyCode, PrimaryColorThemeId, ColorThemeConfig };
+export type { 
+  ActiveTab, 
+  Language, 
+  ThemeMode, 
+  CurrencyCode, 
+  PrimaryColorThemeId, 
+  ColorThemeConfig,
+  TransportMode,
+  MarketVenue,
+  RegionLocation
+};
 
 interface HainContextType {
   // Navigation Tabs
@@ -90,6 +106,37 @@ interface HainContextType {
   setIsBudgetModalOpen: (open: boolean) => void;
   budgetModalStep: 1 | 2;
   setBudgetModalStep: (step: 1 | 2) => void;
+
+  // Region & Market Venues & Transpo Mode
+  userRegionId: string;
+  setUserRegionId: (id: string) => void;
+  currentRegion: RegionLocation;
+  isRegionModalOpen: boolean;
+  setIsRegionModalOpen: (open: boolean) => void;
+  preferredWetMarketId: string;
+  setPreferredWetMarketId: (id: string) => void;
+  activeWetMarket: MarketVenue;
+  preferredSupermarketId: string;
+  setPreferredSupermarketId: (id: string) => void;
+  activeSupermarket: MarketVenue;
+  transportMode: TransportMode;
+  setTransportMode: (mode: TransportMode) => void;
+  selectWetMarketWithCheck: (marketId: string) => void;
+  selectSupermarketWithCheck: (supermarketId: string) => void;
+  trafficPrompt: {
+    isOpen: boolean;
+    targetMarket: MarketVenue;
+    alternativeMarket: MarketVenue;
+    reason: string;
+  } | null;
+  setTrafficPrompt: React.Dispatch<React.SetStateAction<{
+    isOpen: boolean;
+    targetMarket: MarketVenue;
+    alternativeMarket: MarketVenue;
+    reason: string;
+  } | null>>;
+  confirmTrafficMarket: () => void;
+  useAlternativeMarket: () => void;
 
   // Dedicated Actual Search View
   isSearchOpen: boolean;
@@ -221,6 +268,91 @@ export function HainProvider({ children }: { children: React.ReactNode }) {
       }
     }
   }, [setColorThemeId]);
+
+  // Region & Location (Defaults to Muñoz / Balintawak, QC)
+  const [userRegionId, setUserRegionId] = useState<string>('munoz-balintawak');
+  const [isRegionModalOpen, setIsRegionModalOpen] = useState<boolean>(false);
+
+  const currentRegion = useMemo(() => {
+    return REGION_LOCATIONS.find((r) => r.id === userRegionId) || REGION_LOCATIONS[0];
+  }, [userRegionId]);
+
+  // Preferred Markets & Transport Mode
+  const [preferredWetMarketId, setPreferredWetMarketId] = useState<string>('munoz');
+  const [preferredSupermarketId, setPreferredSupermarketId] = useState<string>('puregold-munoz');
+  const [transportMode, setTransportMode] = useState<TransportMode>('walk');
+
+  const activeWetMarket = useMemo(() => {
+    return NEARBY_WET_MARKETS.find((m) => m.id === preferredWetMarketId) || NEARBY_WET_MARKETS[0];
+  }, [preferredWetMarketId]);
+
+  const activeSupermarket = useMemo(() => {
+    return NEARBY_SUPERMARKETS.find((s) => s.id === preferredSupermarketId) || NEARBY_SUPERMARKETS[0];
+  }, [preferredSupermarketId]);
+
+  // Traffic & Walkability Alternative Prompt State
+  const [trafficPrompt, setTrafficPrompt] = useState<{
+    isOpen: boolean;
+    targetMarket: MarketVenue;
+    alternativeMarket: MarketVenue;
+    reason: string;
+  } | null>(null);
+
+  const selectWetMarketWithCheck = useCallback((marketId: string) => {
+    const target = NEARBY_WET_MARKETS.find((m) => m.id === marketId);
+    if (!target) return;
+
+    if (target.trafficLevel === 'Heavy' || target.walkability === 'Low') {
+      const alt = NEARBY_WET_MARKETS.find((m) => m.id === (target.commonAlternativeId || 'munoz')) || NEARBY_WET_MARKETS[0];
+      setTrafficPrompt({
+        isOpen: true,
+        targetMarket: target,
+        alternativeMarket: alt,
+        reason: target.alternativeReason || `Mabigat ang trapiko papuntang ${target.name} (${target.distanceKm} km, ~${target.commuteMinutes} mins biyahe).`,
+      });
+    } else {
+      setPreferredWetMarketId(marketId);
+    }
+  }, []);
+
+  const selectSupermarketWithCheck = useCallback((supermarketId: string) => {
+    const target = NEARBY_SUPERMARKETS.find((s) => s.id === supermarketId);
+    if (!target) return;
+
+    if (target.trafficLevel === 'Heavy' || target.walkability === 'Low') {
+      const alt = NEARBY_SUPERMARKETS.find((s) => s.id === (target.commonAlternativeId || 'puregold-munoz')) || NEARBY_SUPERMARKETS[0];
+      setTrafficPrompt({
+        isOpen: true,
+        targetMarket: target,
+        alternativeMarket: alt,
+        reason: target.alternativeReason || `Mabigat ang trapiko papuntang ${target.name} (${target.distanceKm} km, ~${target.commuteMinutes} mins biyahe).`,
+      });
+    } else {
+      setPreferredSupermarketId(supermarketId);
+    }
+  }, []);
+
+  const confirmTrafficMarket = useCallback(() => {
+    if (trafficPrompt) {
+      if (trafficPrompt.targetMarket.type === 'wetmarket') {
+        setPreferredWetMarketId(trafficPrompt.targetMarket.id);
+      } else {
+        setPreferredSupermarketId(trafficPrompt.targetMarket.id);
+      }
+      setTrafficPrompt(null);
+    }
+  }, [trafficPrompt]);
+
+  const useAlternativeMarket = useCallback(() => {
+    if (trafficPrompt) {
+      if (trafficPrompt.alternativeMarket.type === 'wetmarket') {
+        setPreferredWetMarketId(trafficPrompt.alternativeMarket.id);
+      } else {
+        setPreferredSupermarketId(trafficPrompt.alternativeMarket.id);
+      }
+      setTrafficPrompt(null);
+    }
+  }, [trafficPrompt]);
 
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDayState>('morning');
   const [isAutoTime, setIsAutoTime] = useState<boolean>(true);
@@ -613,6 +745,25 @@ export function HainProvider({ children }: { children: React.ReactNode }) {
         setIsBudgetModalOpen,
         budgetModalStep,
         setBudgetModalStep,
+        userRegionId,
+        setUserRegionId,
+        currentRegion,
+        isRegionModalOpen,
+        setIsRegionModalOpen,
+        preferredWetMarketId,
+        setPreferredWetMarketId,
+        activeWetMarket,
+        preferredSupermarketId,
+        setPreferredSupermarketId,
+        activeSupermarket,
+        transportMode,
+        setTransportMode,
+        selectWetMarketWithCheck,
+        selectSupermarketWithCheck,
+        trafficPrompt,
+        setTrafficPrompt,
+        confirmTrafficMarket,
+        useAlternativeMarket,
         isSearchOpen,
         setIsSearchOpen,
         recentSearches,
