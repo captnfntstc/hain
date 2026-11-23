@@ -71,6 +71,7 @@ export default function MoreTab() {
     activeSupermarket,
     isStoreMapOpen,
     setIsStoreMapOpen,
+    openStoreMap,
     t,
     language,
     setLanguage,
@@ -770,56 +771,6 @@ export default function MoreTab() {
               </div>
             </div>
 
-            {/* Interactive Store Map Launcher Card (Predefined radius & Pinpoint Map) */}
-            <div 
-              onClick={() => setIsStoreMapOpen(true)}
-              className="bg-gradient-to-br from-[#FFF8ED] to-[#FEF3C7] rounded-2xl p-4 border border-amber-300 shadow-sm cursor-pointer tap-spring transition-all hover:shadow-md space-y-3"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-xs">
-                    <Compass className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-bold text-amber-800 tracking-wider">
-                      {language === 'tl' ? 'Interactive Store Map' : 'Interactive Store Map'}
-                    </span>
-                    <h3 className="text-xs sm:text-sm font-bold text-stone-900 leading-tight">
-                      {language === 'tl' ? 'Mapa ng mga Palengke at Grocery' : 'Visual Radar & Store Pinpoints'}
-                    </h3>
-                  </div>
-                </div>
-
-                <span className="text-[10px] font-bold text-white bg-[#B8381D] px-2.5 py-1 rounded-full shadow-xs shrink-0">
-                  {language === 'tl' ? 'Buksan ang Mapa' : 'Open Map'}
-                </span>
-              </div>
-
-              {/* Nearest active stores preview */}
-              <div className="p-2.5 rounded-xl bg-white/90 border border-amber-200/70 text-xs space-y-1.5">
-                <div className="flex items-center justify-between text-stone-700">
-                  <span className="flex items-center gap-1.5 font-semibold">
-                    <span className="w-2 h-2 rounded-full bg-[#B8381D]" />
-                    {language === 'tl' ? 'Pinakamalapit na Palengke:' : 'Nearest Palengke:'}
-                  </span>
-                  <span className="font-bold text-stone-900">{activeWetMarket.shortName} ({activeWetMarket.distanceKm} km)</span>
-                </div>
-                <div className="flex items-center justify-between text-stone-700">
-                  <span className="flex items-center gap-1.5 font-semibold">
-                    <span className="w-2 h-2 rounded-full bg-emerald-600" />
-                    {language === 'tl' ? 'Pinakamalapit na Grocery:' : 'Nearest Supermarket:'}
-                  </span>
-                  <span className="font-bold text-stone-900">{activeSupermarket.shortName} ({activeSupermarket.distanceKm} km)</span>
-                </div>
-              </div>
-
-              <p className="text-[11px] text-amber-950 font-medium">
-                {language === 'tl'
-                  ? 'I-pinch ang mapa para mag-zoom out at makita ang S&R, Balintawak Bagsakan, at iba pang bilihan.'
-                  : 'Pinch the map to zoom out and discover S&R, Balintawak Bagsakan, and more.'}
-              </p>
-            </div>
-
             {/* Mode of Transportation Selector */}
             <div className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-3">
               <div>
@@ -871,138 +822,77 @@ export default function MoreTab() {
               </div>
             </div>
 
-            {/* Preferred Wet Market (Palengke) Picker */}
-            <div className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-3">
-              <div>
-                <h3 className="font-sans font-bold text-xs text-stone-900">
-                  {t.market_primary_wet_title}
-                </h3>
-                <p className="text-[11px] text-stone-500">
-                  {t.market_primary_wet_sub}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                {NEARBY_WET_MARKETS.map((m) => {
-                  const isSelected = preferredWetMarketId === m.id;
-                  const travelTime =
-                    transportMode === 'walk'
-                      ? `${m.walkMinutes} mins lakad`
-                      : transportMode === 'commute'
-                      ? `~${m.commuteMinutes} mins commute (₱${m.commuteFare})`
-                      : `~${m.driveMinutes} mins biyahe`;
-
-                  return (
-                    <div
-                      key={m.id}
-                      onClick={() => selectWetMarketWithCheck(m.id)}
-                      className={`p-3 rounded-xl border transition-all cursor-pointer tap-spring ${
-                        isSelected
-                          ? 'bg-amber-50/80 border-[#B8381D] shadow-xs'
-                          : 'bg-stone-50 border-stone-200 hover:bg-stone-100/60'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-stone-900 truncate">{m.name}</span>
-                            {isSelected && (
-                              <span className="w-3.5 h-3.5 rounded-full bg-[#B8381D] text-white flex items-center justify-center shrink-0">
-                                <Check className="w-2.5 h-2.5 stroke-[3]" />
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-[11px] text-stone-500 mt-0.5">
-                            {m.distanceKm} km • {travelTime}
-                          </div>
-                          <div className="flex items-center gap-1.5 mt-1.5">
-                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                              m.trafficLevel === 'Heavy'
-                                ? 'bg-rose-100 text-rose-800'
-                                : 'bg-emerald-100 text-emerald-800'
-                            }`}>
-                              Trapiko: {m.trafficLevel}
-                            </span>
-                            <span className="text-[10px] text-stone-500 bg-stone-100 px-2 py-0.5 rounded-full">
-                              {m.badge}
-                            </span>
-                          </div>
-                        </div>
-
-                        {m.trafficLevel === 'Heavy' && (
-                          <div className="flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-md shrink-0">
-                            <AlertTriangle className="w-3 h-3 text-amber-600" />
-                            <span>Trapiko</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
+            {/* PREFERRED WETMARKET (Compact Card as requested in uploaded_media_0_1795435697978) */}
+            <div 
+              onClick={() => openStoreMap('wetmarket')}
+              className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-2 cursor-pointer tap-spring hover:border-stone-300 transition-all"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-stone-400">
+                    {language === 'tl' ? 'Paboritong Palengke' : 'PREFERRED WETMARKET'}
+                  </span>
+                  <div className="text-xs font-bold text-stone-900 flex items-center gap-1.5 mt-0.5">
+                    <Store className="w-3.5 h-3.5 text-[#B8381D]" />
+                    <span>{activeWetMarket.name}</span>
+                  </div>
+                  <div className="text-[11px] text-stone-500 font-medium mt-0.5 pl-5">
+                    {activeWetMarket.distanceKm} km • {
+                      transportMode === 'walk'
+                        ? `${activeWetMarket.walkMinutes} mins lakad`
+                        : transportMode === 'commute'
+                        ? `~${activeWetMarket.commuteMinutes} mins commute`
+                        : `~${activeWetMarket.driveMinutes} mins biyahe`
+                    } {activeWetMarket.trafficLevel === 'Heavy' ? '• ⚠️ Mabigat ang trapiko' : ''}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openStoreMap('wetmarket');
+                  }}
+                  className="text-xs font-bold text-[#B8381D] bg-[#FDECE8] px-3 py-1.5 rounded-lg tap-spring hover:bg-[#B8381D]/15 transition-colors shrink-0"
+                >
+                  {language === 'tl' ? 'Palitan' : 'Change'}
+                </button>
               </div>
             </div>
 
-            {/* Preferred Supermarket Picker */}
-            <div className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-3">
-              <div>
-                <h3 className="font-sans font-bold text-xs text-stone-900">
-                  {t.market_primary_super_title}
-                </h3>
-                <p className="text-[11px] text-stone-500">
-                  {t.market_primary_super_sub}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                {NEARBY_SUPERMARKETS.map((s) => {
-                  const isSelected = preferredSupermarketId === s.id;
-                  const travelTime =
-                    transportMode === 'walk'
-                      ? `${s.walkMinutes} mins lakad`
-                      : transportMode === 'commute'
-                      ? `~${s.commuteMinutes} mins commute`
-                      : `~${s.driveMinutes} mins biyahe`;
-
-                  return (
-                    <div
-                      key={s.id}
-                      onClick={() => selectSupermarketWithCheck(s.id)}
-                      className={`p-3 rounded-xl border transition-all cursor-pointer tap-spring ${
-                        isSelected
-                          ? 'bg-emerald-50/80 border-emerald-600 shadow-xs'
-                          : 'bg-stone-50 border-stone-200 hover:bg-stone-100/60'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-stone-900 truncate">{s.name}</span>
-                            {isSelected && (
-                              <span className="w-3.5 h-3.5 rounded-full bg-emerald-700 text-white flex items-center justify-center shrink-0">
-                                <Check className="w-2.5 h-2.5 stroke-[3]" />
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-[11px] text-stone-500 mt-0.5">
-                            {s.distanceKm} km • {travelTime}
-                          </div>
-                          <div className="flex items-center gap-1.5 mt-1.5">
-                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                              s.trafficLevel === 'Heavy'
-                                ? 'bg-rose-100 text-rose-800'
-                                : 'bg-emerald-100 text-emerald-800'
-                            }`}>
-                              Trapiko: {s.trafficLevel}
-                            </span>
-                            <span className="text-[10px] text-stone-500 bg-stone-100 px-2 py-0.5 rounded-full">
-                              {s.badge}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+            {/* PREFERRED SUPERMARKET (Compact Card as requested in uploaded_media_0_1795435697978) */}
+            <div 
+              onClick={() => openStoreMap('supermarket')}
+              className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-2 cursor-pointer tap-spring hover:border-stone-300 transition-all"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-stone-400">
+                    {language === 'tl' ? 'Paboritong Supermarket' : 'PREFERRED SUPERMARKET'}
+                  </span>
+                  <div className="text-xs font-bold text-stone-900 flex items-center gap-1.5 mt-0.5">
+                    <ShoppingBag className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>{activeSupermarket.name}</span>
+                  </div>
+                  <div className="text-[11px] text-stone-500 font-medium mt-0.5 pl-5">
+                    {activeSupermarket.distanceKm} km • {
+                      transportMode === 'walk'
+                        ? `${activeSupermarket.walkMinutes} mins lakad`
+                        : transportMode === 'commute'
+                        ? `~${activeSupermarket.commuteMinutes} mins commute`
+                        : `~${activeSupermarket.driveMinutes} mins biyahe`
+                    }
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openStoreMap('supermarket');
+                  }}
+                  className="text-xs font-bold text-[#B8381D] bg-[#FDECE8] px-3 py-1.5 rounded-lg tap-spring hover:bg-[#B8381D]/15 transition-colors shrink-0"
+                >
+                  {language === 'tl' ? 'Palitan' : 'Change'}
+                </button>
               </div>
             </div>
 

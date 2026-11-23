@@ -17,20 +17,26 @@ import {
   ZoomOut, 
   LocateFixed, 
   ChevronRight,
-  Sparkles,
-  SlidersHorizontal,
   Compass
 } from 'lucide-react';
-import { ALL_MAP_STORES, MarketVenue, TransportMode } from '../types/hain';
+import { 
+  ALL_MAP_STORES, 
+  NEARBY_WET_MARKETS, 
+  NEARBY_SUPERMARKETS, 
+  MarketVenue, 
+  TransportMode 
+} from '../types/hain';
+
+const ITEM_HEIGHT = 48; // Exact row height for Apple UIPickerView style
 
 export default function InteractiveStoreMapModal() {
   const {
     isStoreMapOpen,
     setIsStoreMapOpen,
+    storeMapTargetType,
+    setStoreMapTargetType,
     preferredWetMarketId,
-    setPreferredWetMarketId,
     preferredSupermarketId,
-    setPreferredSupermarketId,
     selectWetMarketWithCheck,
     selectSupermarketWithCheck,
     transportMode,
@@ -41,97 +47,112 @@ export default function InteractiveStoreMapModal() {
 
   const isTagalog = language === 'tl';
 
-  // Selected Store ID on Map
-  const [activeStoreId, setActiveStoreId] = useState<string>('munoz');
-  
-  // Radius filter in meters: 500, 1500, 3000, 5000
-  const [selectedRadius, setSelectedRadius] = useState<number>(1500);
+  // Target list based on active category: wetmarket vs supermarket
+  const currentStores = useMemo(() => {
+    return storeMapTargetType === 'wetmarket' ? NEARBY_WET_MARKETS : NEARBY_SUPERMARKETS;
+  }, [storeMapTargetType]);
 
-  // Store filter: 'all' | 'wetmarket' | 'supermarket'
-  const [categoryFilter, setCategoryFilter] = useState<'all' | 'wetmarket' | 'supermarket'>('all');
+  // Selected Store ID on Map
+  const [activeStoreId, setActiveStoreId] = useState<string>(
+    storeMapTargetType === 'wetmarket' ? preferredWetMarketId : preferredSupermarketId
+  );
+  
+  // Radius filter in meters: 500, 1500, 3000
+  const [selectedRadius, setSelectedRadius] = useState<number>(1500);
 
   // Map panning & zoom state (viewBox relative to 1000x1000 map canvas)
   const [mapCenter, setMapCenter] = useState<{ x: number; y: number }>({ x: 500, y: 500 });
-  const [zoomLevel, setZoomLevel] = useState<number>(1.2); // 0.8 (zoomed out) to 2.2 (zoomed in)
+  const [zoomLevel, setZoomLevel] = useState<number>(1.2); // 0.8 to 2.2
 
-  // Carousel & Map refs
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  // Wheel picker & SVG refs
+  const pickerScrollRef = useRef<HTMLDivElement>(null);
   const mapSvgRef = useRef<SVGSVGElement>(null);
   const isProgrammaticScroll = useRef<boolean>(false);
-
-  // Filtered stores based on category and radius
-  const visibleStores = useMemo(() => {
-    return ALL_MAP_STORES.filter((store) => {
-      const matchCat = categoryFilter === 'all' || store.type === categoryFilter;
-      const matchRadius = store.radiusTier <= selectedRadius;
-      return matchCat && matchRadius;
-    });
-  }, [categoryFilter, selectedRadius]);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const activeStore = useMemo(() => {
-    return ALL_MAP_STORES.find((s) => s.id === activeStoreId) || ALL_MAP_STORES[0];
-  }, [activeStoreId]);
+    return ALL_MAP_STORES.find((s) => s.id === activeStoreId) || currentStores[0] || ALL_MAP_STORES[0];
+  }, [activeStoreId, currentStores]);
 
   // Center map on a specific store's coordinates
   const centerOnStore = useCallback((store: MarketVenue) => {
     setMapCenter({ x: store.mapX, y: store.mapY });
-    // If store is outside current radius, automatically expand radius so it's revealed
+    // Expand radius if store is outside current radar radius
     if (store.radiusTier > selectedRadius) {
       setSelectedRadius(store.radiusTier);
     }
   }, [selectedRadius]);
 
-  // Scroll horizontal picker carousel to a specific store card
-  const scrollCarouselToStore = useCallback((storeId: string) => {
-    const cardEl = cardRefs.current[storeId];
-    if (cardEl && carouselRef.current) {
-      isProgrammaticScroll.current = true;
-      cardEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      setTimeout(() => {
-        isProgrammaticScroll.current = false;
-      }, 400);
-    }
+  // Scroll the Apple vertical picker to a specific item index
+  const scrollPickerToIndex = useCallback((index: number, smooth: boolean = true) => {
+    if (!pickerScrollRef.current) return;
+    isProgrammaticScroll.current = true;
+    pickerScrollRef.current.scrollTo({
+      top: index * ITEM_HEIGHT,
+      behavior: smooth ? 'smooth' : 'auto',
+    });
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    scrollTimeoutRef.current = setTimeout(() => {
+      isProgrammaticScroll.current = false;
+    }, 350);
   }, []);
 
-  // When user clicks a store pin on the map
-  const handlePinClick = useCallback((store: MarketVenue) => {
-    setActiveStoreId(store.id);
-    centerOnStore(store);
-    scrollCarouselToStore(store.id);
-  }, [centerOnStore, scrollCarouselToStore]);
+  // Sync picker and map center when modal opens or target category changes
+  useEffect(() => {
+    if (isStoreMapOpen) {
+      const defaultId = storeMapTargetType === 'wetmarket' ? preferredWetMarketId : preferredSupermarketId;
+      setActiveStoreId(defaultId);
 
-  // Two-way synchronization: When horizontal carousel scrolls, update active store & center map
-  const handleCarouselScroll = useCallback(() => {
-    if (isProgrammaticScroll.current || !carouselRef.current) return;
-    
-    const container = carouselRef.current;
-    const containerCenter = container.getBoundingClientRect().left + container.offsetWidth / 2;
+      const targetIndex = currentStores.findIndex((s) => s.id === defaultId);
+      const safeIndex = targetIndex >= 0 ? targetIndex : 0;
+      const targetStore = currentStores[safeIndex] || currentStores[0];
 
-    let closestStoreId = activeStoreId;
-    let minDistance = Infinity;
-
-    visibleStores.forEach((store) => {
-      const card = cardRefs.current[store.id];
-      if (card) {
-        const rect = card.getBoundingClientRect();
-        const cardCenter = rect.left + rect.width / 2;
-        const dist = Math.abs(containerCenter - cardCenter);
-        if (dist < minDistance) {
-          minDistance = dist;
-          closestStoreId = store.id;
-        }
-      }
-    });
-
-    if (closestStoreId !== activeStoreId) {
-      setActiveStoreId(closestStoreId);
-      const target = ALL_MAP_STORES.find((s) => s.id === closestStoreId);
-      if (target) {
-        setMapCenter({ x: target.mapX, y: target.mapY });
+      if (targetStore) {
+        centerOnStore(targetStore);
+        // Small delay to ensure DOM is ready for scroll
+        setTimeout(() => {
+          scrollPickerToIndex(safeIndex, false);
+        }, 50);
       }
     }
-  }, [activeStoreId, visibleStores]);
+  }, [isStoreMapOpen, storeMapTargetType, preferredWetMarketId, preferredSupermarketId, currentStores, centerOnStore, scrollPickerToIndex]);
+
+  // When user clicks a store pin on the SVG map
+  const handlePinClick = useCallback((store: MarketVenue) => {
+    if (store.type !== storeMapTargetType) {
+      setStoreMapTargetType(store.type);
+    }
+    setActiveStoreId(store.id);
+    centerOnStore(store);
+
+    const storeList = store.type === 'wetmarket' ? NEARBY_WET_MARKETS : NEARBY_SUPERMARKETS;
+    const idx = storeList.findIndex((s) => s.id === store.id);
+    if (idx >= 0) {
+      scrollPickerToIndex(idx, true);
+    }
+  }, [storeMapTargetType, setStoreMapTargetType, centerOnStore, scrollPickerToIndex]);
+
+  // Handle Apple wheel picker vertical scroll
+  const handlePickerScroll = useCallback(() => {
+    if (isProgrammaticScroll.current || !pickerScrollRef.current) return;
+
+    const scrollTop = pickerScrollRef.current.scrollTop;
+    const index = Math.round(scrollTop / ITEM_HEIGHT);
+    const clampedIndex = Math.max(0, Math.min(currentStores.length - 1, index));
+    const targetStore = currentStores[clampedIndex];
+
+    if (targetStore && targetStore.id !== activeStoreId) {
+      setActiveStoreId(targetStore.id);
+      centerOnStore(targetStore);
+    }
+  }, [currentStores, activeStoreId, centerOnStore]);
+
+  // Handle item tap in wheel picker
+  const handleItemTap = useCallback((store: MarketVenue, index: number) => {
+    setActiveStoreId(store.id);
+    centerOnStore(store);
+    scrollPickerToIndex(index, true);
+  }, [centerOnStore, scrollPickerToIndex]);
 
   // Center on user location (Muñoz / Roosevelt Ave cor EDSA, QC)
   const centerOnUser = () => {
@@ -148,13 +169,12 @@ export default function InteractiveStoreMapModal() {
     setZoomLevel((prev) => {
       const next = Math.max(0.7, prev - 0.3);
       if (next < 1.0 && selectedRadius < 3000) {
-        setSelectedRadius(3000); // revealing more stores on pinch out
+        setSelectedRadius(3000); // reveal outer stores on zoom out
       }
       return next;
     });
   };
 
-  // Radius change: when zooming out or picking wider radius, reveal more stores
   const handleRadiusChange = (radius: number) => {
     setSelectedRadius(radius);
     if (radius === 500) setZoomLevel(1.5);
@@ -182,10 +202,8 @@ export default function InteractiveStoreMapModal() {
 
       if (Math.abs(diff) > 20) {
         if (diff > 0) {
-          // Pinching out (expanding view / revealing more)
           handleZoomOut();
         } else {
-          // Pinching in (zooming into detail)
           handleZoomIn();
         }
         touchStartDist.current = dist;
@@ -197,8 +215,8 @@ export default function InteractiveStoreMapModal() {
     touchStartDist.current = null;
   };
 
-  // Handle selecting the store as active preferred store in Hain state
-  const handleSelectStore = (store: MarketVenue) => {
+  // Confirmation action
+  const handleConfirmStore = (store: MarketVenue) => {
     if (store.type === 'wetmarket') {
       selectWetMarketWithCheck(store.id);
     } else {
@@ -209,6 +227,13 @@ export default function InteractiveStoreMapModal() {
 
   if (!isStoreMapOpen) return null;
 
+  // Travel time display helper
+  const getTravelTime = (store: MarketVenue) => {
+    if (transportMode === 'walk') return `${store.walkMinutes} mins lakad`;
+    if (transportMode === 'commute') return `~${store.commuteMinutes} mins commute (₱${store.commuteFare})`;
+    return `~${store.driveMinutes} mins biyahe`;
+  };
+
   // Compute SVG viewBox based on mapCenter and zoomLevel
   const boxWidth = 1000 / zoomLevel;
   const boxHeight = 850 / zoomLevel;
@@ -217,16 +242,18 @@ export default function InteractiveStoreMapModal() {
   const viewBox = `${viewBoxMinX} ${viewBoxMinY} ${boxWidth} ${boxHeight}`;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex flex-col justify-between overflow-hidden animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex flex-col justify-between overflow-hidden animate-in fade-in duration-200">
       
-      {/* TOP FLOATING NAVIGATION & CONTROLS */}
+      {/* TOP FLOATING CONTROLS & RADAR RADIUS */}
       <div className="absolute top-0 left-0 right-0 z-20 px-4 pt-10 pb-3 bg-gradient-to-b from-stone-900/90 via-stone-900/60 to-transparent flex flex-col gap-2.5">
         <div className="flex items-center justify-between">
           {/* Location & Title Chip */}
-          <div className="flex items-center gap-2 bg-stone-900/80 backdrop-blur-md text-white px-3.5 py-1.5 rounded-full border border-white/20 shadow-md">
+          <div className="flex items-center gap-2 bg-stone-900/85 backdrop-blur-md text-white px-3.5 py-1.5 rounded-full border border-white/20 shadow-md">
             <Compass className="w-4 h-4 text-amber-400" />
             <span className="text-xs font-bold font-sans">
-              {isTagalog ? 'Mapa ng mga Palengke at Grocery' : 'Live Store Map & Radar'}
+              {storeMapTargetType === 'wetmarket'
+                ? (isTagalog ? 'Mapa ng Palengke' : 'Wet Market Radar')
+                : (isTagalog ? 'Mapa ng Supermarket' : 'Supermarket Radar')}
             </span>
             <span className="text-[10px] text-amber-300 font-semibold">• Muñoz, QC</span>
           </div>
@@ -242,12 +269,12 @@ export default function InteractiveStoreMapModal() {
           </button>
         </div>
 
-        {/* Radius Filter Pills */}
+        {/* Radius Filter Pills & Mode of Transport */}
         <div className="flex items-center justify-between gap-2 overflow-x-auto no-scrollbar pt-1">
           <div className="flex items-center gap-1.5 bg-stone-900/70 backdrop-blur-md p-1 rounded-full border border-white/15">
             {[500, 1500, 3000].map((rad) => {
               const isSelected = selectedRadius === rad;
-              const label = rad === 500 ? '500m (Walking)' : rad === 1500 ? '1.5 km (S&R / SM)' : '3.0 km (Bagsakan)';
+              const label = rad === 500 ? '500m (Walk)' : rad === 1500 ? '1.5 km (S&R/SM)' : '3.0 km (Bagsakan)';
               return (
                 <button
                   key={rad}
@@ -321,7 +348,7 @@ export default function InteractiveStoreMapModal() {
           {/* BASE MAP BLOCKS & URBAN GREENERY */}
           <rect x="0" y="0" width="1000" height="1000" fill="#EFEADF" />
           
-          {/* Parks & Open Spaces (Veterans Memorial, Cloverleaf Park, San Francisco Park) */}
+          {/* Parks & Open Spaces */}
           <rect x="700" y="600" width="280" height="350" rx="20" fill="url(#parkPattern)" />
           <text x="820" y="760" fill="#8DA67E" fontSize="14" fontWeight="bold" fontFamily="sans-serif">Veterans Green</text>
           
@@ -334,8 +361,7 @@ export default function InteractiveStoreMapModal() {
           <rect x="80" y="620" width="340" height="260" rx="16" fill="#E8E2D4" />
           <text x="180" y="750" fill="#A89E8C" fontSize="13" fontWeight="bold" fontFamily="sans-serif">Frisco / SFDM District</text>
 
-          {/* PREDEFINED RADIUS RADAR CIRCLES AROUND USER (500, 500) */}
-          {/* 3000m radius circle */}
+          {/* RADAR CIRCLES AROUND USER (500, 500) */}
           <circle 
             cx="500" 
             cy="500" 
@@ -347,7 +373,6 @@ export default function InteractiveStoreMapModal() {
           />
           <text x="505" y="130" fill="#A39682" fontSize="11" fontWeight="bold" fontFamily="sans-serif">3.0 km Radius</text>
 
-          {/* 1500m radius circle */}
           <circle 
             cx="500" 
             cy="500" 
@@ -359,7 +384,6 @@ export default function InteractiveStoreMapModal() {
           />
           <text x="505" y="270" fill="#8C7A62" fontSize="11" fontWeight="bold" fontFamily="sans-serif">1.5 km (S&R • SM • Frisco)</text>
 
-          {/* 500m radius circle */}
           <circle 
             cx="500" 
             cy="500" 
@@ -371,8 +395,7 @@ export default function InteractiveStoreMapModal() {
           />
           <text x="505" y="420" fill="#B8381D" fontSize="10" fontWeight="bold" fontFamily="sans-serif">500m Walking Zone</text>
 
-          {/* MAJOR THOROUGHFARES / ROADS */}
-          {/* EDSA (Major highway diagonal connecting Balintawak to North Ave) */}
+          {/* MAJOR THOROUGHFARES */}
           <path 
             d="M 120 180 L 320 320 L 500 500 L 720 620 L 940 760" 
             stroke="#F59E0B" 
@@ -403,7 +426,7 @@ export default function InteractiveStoreMapModal() {
             E D S A  (NORTH AVE MRT)
           </text>
 
-          {/* Roosevelt Ave / Fernando Poe Jr. Ave (Connecting South-West to EDSA) */}
+          {/* Roosevelt Ave */}
           <path 
             d="M 280 880 L 500 500 L 580 340 L 700 120" 
             stroke="#FFFFFF" 
@@ -415,7 +438,7 @@ export default function InteractiveStoreMapModal() {
             ROOSEVELT / FPJ AVE
           </text>
 
-          {/* Congressional Avenue (Leading to S&R) */}
+          {/* Congressional Avenue (S&R) */}
           <path 
             d="M 480 480 L 680 340 L 920 220" 
             stroke="#FFFFFF" 
@@ -427,7 +450,7 @@ export default function InteractiveStoreMapModal() {
             CONGRESSIONAL AVE (S&R)
           </text>
 
-          {/* A. Bonifacio Ave (Leading to Balintawak Cloverleaf) */}
+          {/* A. Bonifacio Ave */}
           <path 
             d="M 160 380 L 260 270 L 360 140" 
             stroke="#FFFFFF" 
@@ -439,7 +462,7 @@ export default function InteractiveStoreMapModal() {
             A. BONIFACIO AVE
           </text>
 
-          {/* North Avenue / West Avenue */}
+          {/* North Avenue */}
           <path 
             d="M 720 620 L 950 620" 
             stroke="#FFFFFF" 
@@ -451,7 +474,7 @@ export default function InteractiveStoreMapModal() {
             NORTH AVE
           </text>
 
-          {/* MRT / LRT Elevated Track Line */}
+          {/* MRT / LRT Line */}
           <path 
             d="M 140 195 L 330 330 L 505 505 L 725 625 L 945 765" 
             stroke="#0284C7" 
@@ -462,12 +485,10 @@ export default function InteractiveStoreMapModal() {
 
           {/* USER LOCATION BEACON (500, 500) */}
           <g transform="translate(500, 500)">
-            {/* Pulsing ring */}
             <circle r="22" fill="#3B82F6" opacity="0.3" className="animate-ping" />
             <circle r="14" fill="#3B82F6" opacity="0.4" />
             <circle r="7.5" fill="#2563EB" stroke="#FFFFFF" strokeWidth="2.5" />
             
-            {/* User Label Flag */}
             <rect x="-38" y="12" width="76" height="18" rx="9" fill="#1E3A8A" />
             <text x="0" y="24" textAnchor="middle" fill="#FFFFFF" fontSize="9" fontWeight="bold" fontFamily="sans-serif">
               You are here
@@ -475,12 +496,14 @@ export default function InteractiveStoreMapModal() {
           </g>
 
           {/* STORE PINPOINTS ON MAP */}
-          {visibleStores.map((store) => {
+          {ALL_MAP_STORES.map((store) => {
             const isSelected = activeStoreId === store.id;
+            const isTargetCategory = store.type === storeMapTargetType;
             const isWet = store.type === 'wetmarket';
             const isClub = store.id === 'snr-congressional' || store.id === 'landers-balintawak';
 
             const pinColor = isWet ? '#B8381D' : isClub ? '#0F3A60' : '#15803D';
+            const travelTime = getTravelTime(store);
 
             return (
               <g 
@@ -488,6 +511,7 @@ export default function InteractiveStoreMapModal() {
                 transform={`translate(${store.mapX}, ${store.mapY})`}
                 onClick={() => handlePinClick(store)}
                 className="cursor-pointer transition-transform duration-200"
+                opacity={isTargetCategory ? 1 : 0.45}
               >
                 {/* Active selection glow ring */}
                 {isSelected && (
@@ -495,12 +519,12 @@ export default function InteractiveStoreMapModal() {
                 )}
 
                 {/* Pin Shadow */}
-                <ellipse cx="0" cy="5" rx="8" ry="3.5" fill="#000000" opacity="0.2" />
+                <ellipse cx="0" cy="5" rx="8" ry="3.5" fill="#000000" opacity="0.25" />
 
-                {/* Pin Body / Teardrop Marker */}
+                {/* Pin Body Marker */}
                 <path
                   d="M 0 0 C -9 -14 -12 -22 -12 -30 A 12 12 0 1 1 12 -30 C 12 -22 9 -14 0 0 Z"
-                  fill={isSelected ? pinColor : '#44403C'}
+                  fill={isSelected ? pinColor : isTargetCategory ? pinColor : '#78716C'}
                   stroke="#FFFFFF"
                   strokeWidth="2"
                   filter="drop-shadow(0px 3px 6px rgba(0,0,0,0.3))"
@@ -517,18 +541,18 @@ export default function InteractiveStoreMapModal() {
 
                 {/* PROMINENT SPEECH BUBBLE WHEN ACTIVE (As specifically requested: "parang bubble sa pinpoint, may name and the distance from the user") */}
                 {isSelected && (
-                  <g transform="translate(0, -52)" className="animate-in zoom-in-95 duration-150">
+                  <g transform="translate(0, -50)" className="animate-in zoom-in-95 duration-150">
                     {/* Bubble Container */}
                     <rect 
-                      x="-85" 
-                      y="-34" 
-                      width="170" 
-                      height="34" 
-                      rx="17" 
+                      x="-95" 
+                      y="-36" 
+                      width="190" 
+                      height="36" 
+                      rx="18" 
                       fill="#FFFFFF" 
                       stroke={pinColor} 
                       strokeWidth="2.5" 
-                      filter="drop-shadow(0px 8px 16px rgba(0,0,0,0.22))"
+                      filter="drop-shadow(0px 8px 18px rgba(0,0,0,0.25))"
                     />
                     
                     {/* Speech Bubble Pointer Arrow */}
@@ -538,13 +562,12 @@ export default function InteractiveStoreMapModal() {
                       stroke={pinColor}
                       strokeWidth="2"
                     />
-                    {/* Mask bottom arrow border */}
                     <line x1="-6" y1="0" x2="6" y2="0" stroke="#FFFFFF" strokeWidth="3" />
 
                     {/* Bubble Text: Store Name & Distance */}
                     <text 
                       x="0" 
-                      y="-19" 
+                      y="-20" 
                       textAnchor="middle" 
                       fill="#1C1917" 
                       fontSize="11" 
@@ -555,14 +578,14 @@ export default function InteractiveStoreMapModal() {
                     </text>
                     <text 
                       x="0" 
-                      y="-7" 
+                      y="-8" 
                       textAnchor="middle" 
                       fill={pinColor} 
                       fontSize="10" 
                       fontWeight="bold" 
                       fontFamily="sans-serif"
                     >
-                      📍 {store.distanceKm} km • {store.walkMinutes} mins
+                      📍 {store.distanceKm} km • {travelTime}
                     </text>
                   </g>
                 )}
@@ -587,7 +610,7 @@ export default function InteractiveStoreMapModal() {
             type="button"
             onClick={handleZoomOut}
             className="w-10 h-10 rounded-full bg-white/95 text-stone-800 shadow-lg flex items-center justify-center hover:bg-white active:scale-95 transition-all border border-stone-200"
-            title="Zoom Out (Reveal More)"
+            title="Zoom Out"
             aria-label="Zoom Out"
           >
             <ZoomOut className="w-5 h-5" />
@@ -605,167 +628,133 @@ export default function InteractiveStoreMapModal() {
         </div>
       </div>
 
-      {/* BOTTOM DRAWER / HORIZONTAL SNAP-SCROLL PICKER */}
-      <div className="relative z-20 bg-white rounded-t-[32px] shadow-[0_-10px_35px_rgba(0,0,0,0.18)] border-t border-stone-200/80 pt-3 pb-safe-sheet flex flex-col space-y-3">
+      {/* BOTTOM DRAWER / APPLE VERTICAL WHEEL SCROLL PICKER */}
+      <div className="relative z-20 bg-white rounded-t-[32px] shadow-[0_-12px_36px_rgba(0,0,0,0.18)] border-t border-stone-200/80 pt-3 pb-safe-sheet flex flex-col space-y-3 px-5">
         
-        {/* Grab Handle & Category Switcher */}
-        <div className="flex items-center justify-between px-5 pt-1">
+        {/* Grab Handle & Category Switcher Pills */}
+        <div className="flex items-center justify-between pt-1">
           <div className="flex items-center gap-1.5 bg-stone-100 p-1 rounded-full text-xs font-bold">
             <button
               type="button"
-              onClick={() => setCategoryFilter('all')}
-              className={`px-3 py-1 rounded-full transition-all tap-spring ${
-                categoryFilter === 'all'
-                  ? 'bg-white text-stone-900 shadow-xs'
-                  : 'text-stone-500 hover:text-stone-800'
-              }`}
-            >
-              {isTagalog ? 'Lahat' : 'All Stores'} ({visibleStores.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setCategoryFilter('wetmarket')}
-              className={`px-3 py-1 rounded-full transition-all tap-spring ${
-                categoryFilter === 'wetmarket'
+              onClick={() => {
+                setStoreMapTargetType('wetmarket');
+              }}
+              className={`px-3.5 py-1.5 rounded-full transition-all tap-spring flex items-center gap-1.5 ${
+                storeMapTargetType === 'wetmarket'
                   ? 'bg-[#B8381D] text-white shadow-xs'
                   : 'text-stone-500 hover:text-stone-800'
               }`}
             >
-              🐟 {isTagalog ? 'Palengke' : 'Wet Market'}
+              <Store className="w-3.5 h-3.5" />
+              <span>{isTagalog ? 'Palengke' : 'Wet Market'}</span>
+              <span className="text-[10px] opacity-80">({NEARBY_WET_MARKETS.length})</span>
             </button>
+
             <button
               type="button"
-              onClick={() => setCategoryFilter('supermarket')}
-              className={`px-3 py-1 rounded-full transition-all tap-spring ${
-                categoryFilter === 'supermarket'
+              onClick={() => {
+                setStoreMapTargetType('supermarket');
+              }}
+              className={`px-3.5 py-1.5 rounded-full transition-all tap-spring flex items-center gap-1.5 ${
+                storeMapTargetType === 'supermarket'
                   ? 'bg-emerald-700 text-white shadow-xs'
                   : 'text-stone-500 hover:text-stone-800'
               }`}
             >
-              🛒 Supermarket &amp; Club
+              <ShoppingBag className="w-3.5 h-3.5" />
+              <span>{isTagalog ? 'Supermarket' : 'Supermarket'}</span>
+              <span className="text-[10px] opacity-80">({NEARBY_SUPERMARKETS.length})</span>
             </button>
           </div>
 
-          <span className="text-[11px] font-semibold text-stone-500">
-            {isTagalog ? 'I-swipe ang mga store ➔' : 'Swipe cards below ➔'}
+          <span className="text-[11px] font-semibold text-stone-400">
+            {isTagalog ? 'I-scroll ang pangalan' : 'Scroll store name'}
           </span>
         </div>
 
-        {/* HORIZONTAL CAROUSEL PICKER (Synchronized with Map) */}
-        <div
-          ref={carouselRef}
-          onScroll={handleCarouselScroll}
-          className="flex overflow-x-auto snap-x snap-mandatory gap-3 px-5 pb-2 no-scrollbar scroll-smooth"
-          style={{ scrollSnapType: 'x mandatory' }}
-        >
-          {visibleStores.map((store) => {
-            const isSelected = activeStoreId === store.id;
-            const isCurrentPreferred =
-              store.type === 'wetmarket'
-                ? preferredWetMarketId === store.id
-                : preferredSupermarketId === store.id;
+        {/* APPLE-STYLE VERTICAL WHEEL PICKER (UIPickerView style: Name only, snap to center) */}
+        <div className="relative h-36 w-full select-none overflow-hidden my-1">
+          {/* Top 3D cylinder gradient fade overlay */}
+          <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-white via-white/80 to-transparent pointer-events-none z-10" />
 
-            const travelTime =
-              transportMode === 'walk'
-                ? `${store.walkMinutes} mins lakad`
-                : transportMode === 'commute'
-                ? `~${store.commuteMinutes} mins commute (₱${store.commuteFare})`
-                : `~${store.driveMinutes} mins biyahe`;
+          {/* Center selection lens bar */}
+          <div className="absolute top-12 left-0 right-0 h-12 bg-stone-100/70 border-y border-stone-200/90 rounded-xl pointer-events-none z-0" />
 
-            const isWet = store.type === 'wetmarket';
-            const accent = isWet ? '#B8381D' : '#15803D';
+          {/* Bottom 3D cylinder gradient fade overlay */}
+          <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none z-10" />
 
-            return (
-              <div
-                key={store.id}
-                ref={(el) => { cardRefs.current[store.id] = el; }}
-                onClick={() => handlePinClick(store)}
-                className={`snap-center shrink-0 w-[84vw] sm:w-[320px] rounded-2xl p-4 border-2 transition-all cursor-pointer tap-spring flex flex-col justify-between ${
-                  isSelected
-                    ? 'border-[#B8381D] bg-amber-50/50 shadow-md scale-101'
-                    : 'border-stone-200 bg-stone-50/70 hover:bg-stone-100/60 shadow-xs'
-                }`}
-              >
-                <div>
-                  {/* Top Row: Store Name & Distance */}
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className={`w-2 h-2 rounded-full ${isWet ? 'bg-[#B8381D]' : 'bg-emerald-600'}`} />
-                        <h4 className="font-sans font-bold text-sm text-stone-900 truncate">
-                          {store.name}
-                        </h4>
-                      </div>
-                      <p className="text-[11px] text-stone-500 mt-0.5 truncate">
-                        {store.address}
-                      </p>
-                    </div>
-
-                    <div className="text-right shrink-0">
-                      <span className="text-xs font-extrabold text-stone-900 bg-white border border-stone-200 px-2.5 py-1 rounded-full shadow-xs">
-                        {store.distanceKm} km
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Travel & Traffic Indicators */}
-                  <div className="flex items-center gap-2 mt-2.5 text-xs text-stone-600">
-                    <span className="font-semibold text-stone-800">{travelTime}</span>
-                    <span>•</span>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      store.trafficLevel === 'Heavy'
-                        ? 'bg-rose-100 text-rose-800'
-                        : store.trafficLevel === 'Moderate'
-                        ? 'bg-amber-100 text-amber-800'
-                        : 'bg-emerald-100 text-emerald-800'
-                    }`}>
-                      {isTagalog ? `Trapiko: ${store.trafficLevel}` : `Traffic: ${store.trafficLevel}`}
-                    </span>
-                  </div>
-
-                  {/* Badges */}
-                  <div className="flex items-center gap-1.5 mt-2 overflow-hidden">
-                    <span className="text-[10px] text-stone-600 bg-white border border-stone-200 px-2 py-0.5 rounded-md truncate">
-                      {store.badge}
-                    </span>
-                    {store.wholesaleRate && (
-                      <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-md shrink-0">
-                        Wholesale
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Bottom Action: Select Store */}
-                <div className="pt-3.5 mt-2 border-t border-stone-200/60 flex items-center justify-between">
-                  <div className="text-[11px] font-semibold text-stone-500">
-                    {isCurrentPreferred ? (
-                      <span className="text-emerald-700 font-bold flex items-center gap-1">
-                        <Check className="w-3.5 h-3.5 stroke-[3]" />
-                        {isTagalog ? 'Kasalukuyang Bilihan' : 'Active Choice'}
-                      </span>
-                    ) : (
-                      <span>{store.type === 'wetmarket' ? (isTagalog ? 'Palengke' : 'Wet Market') : (isTagalog ? 'Supermarket' : 'Supermarket')}</span>
-                    )}
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSelectStore(store);
-                    }}
-                    style={{ backgroundColor: isCurrentPreferred ? '#15803D' : colorTheme.badgeBg }}
-                    className="px-4 py-2 rounded-xl text-white text-xs font-bold shadow-sm tap-spring hover:opacity-95 active:scale-95 transition-all flex items-center gap-1.5"
+          {/* Vertical scroll list */}
+          <div
+            ref={pickerScrollRef}
+            onScroll={handlePickerScroll}
+            className="w-full h-36 overflow-y-auto snap-y snap-mandatory scroll-smooth no-scrollbar py-12 relative z-5"
+            style={{ scrollSnapType: 'y mandatory' }}
+          >
+            {currentStores.map((store, idx) => {
+              const isSelected = activeStoreId === store.id;
+              return (
+                <div
+                  key={store.id}
+                  onClick={() => handleItemTap(store, idx)}
+                  className="h-12 flex items-center justify-center snap-center cursor-pointer select-none px-4 text-center transition-all duration-150"
+                >
+                  <span
+                    className={`transition-all duration-150 truncate max-w-full font-sans ${
+                      isSelected
+                        ? 'font-bold text-stone-900 text-sm sm:text-base scale-100'
+                        : 'font-medium text-stone-400 text-xs sm:text-sm scale-95 opacity-40 hover:opacity-75'
+                    }`}
                   >
-                    <span>{isCurrentPreferred ? (isTagalog ? 'Naka-set' : 'Selected') : (isTagalog ? 'Piliin Ito' : 'Select Store')}</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </button>
+                    {store.name}
+                  </span>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
+
+        {/* ACTIVE STORE DETAILS CHIP */}
+        <div className="bg-stone-50 rounded-2xl p-3 border border-stone-200/80 flex items-center justify-between gap-3 text-xs">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 font-bold text-stone-800 truncate">
+              <MapPin className="w-3.5 h-3.5 text-[#B8381D] shrink-0" />
+              <span className="truncate">{activeStore.address}</span>
+            </div>
+            <div className="text-[11px] text-stone-500 font-medium mt-0.5 flex items-center gap-1.5">
+              <span>{activeStore.distanceKm} km</span>
+              <span>•</span>
+              <span>{getTravelTime(activeStore)}</span>
+              <span>•</span>
+              <span className={`font-semibold ${
+                activeStore.trafficLevel === 'Heavy' ? 'text-rose-600' : 'text-emerald-700'
+              }`}>
+                {isTagalog ? `Trapiko: ${activeStore.trafficLevel}` : `Traffic: ${activeStore.trafficLevel}`}
+              </span>
+            </div>
+          </div>
+
+          {activeStore.badge && (
+            <span className="text-[10px] font-semibold text-stone-600 bg-white border border-stone-200 px-2.5 py-1 rounded-lg shrink-0">
+              {activeStore.badge}
+            </span>
+          )}
+        </div>
+
+        {/* BOTTOM ACTION BUTTON */}
+        <button
+          type="button"
+          onClick={() => handleConfirmStore(activeStore)}
+          style={{ backgroundColor: colorTheme.badgeBg }}
+          className="w-full py-3.5 px-4 rounded-xl text-white font-bold text-xs sm:text-sm shadow-md tap-spring hover:opacity-95 active:scale-98 transition-all flex items-center justify-center gap-2"
+        >
+          <Check className="w-4 h-4 stroke-[2.5]" />
+          <span>
+            {isTagalog 
+              ? `Piliin: ${activeStore.shortName}` 
+              : `Select: ${activeStore.shortName}`}
+          </span>
+          <ChevronRight className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );

@@ -142,6 +142,9 @@ interface HainContextType {
   setIsStoreMapOpen: (open: boolean) => void;
   selectedMapStoreId: string;
   setSelectedMapStoreId: (id: string) => void;
+  storeMapTargetType: 'wetmarket' | 'supermarket';
+  setStoreMapTargetType: (type: 'wetmarket' | 'supermarket') => void;
+  openStoreMap: (targetType: 'wetmarket' | 'supermarket') => void;
 
   // Dedicated Actual Search View
   isSearchOpen: boolean;
@@ -290,6 +293,14 @@ export function HainProvider({ children }: { children: React.ReactNode }) {
   // Interactive Store Map Modal State
   const [isStoreMapOpen, setIsStoreMapOpen] = useState<boolean>(false);
   const [selectedMapStoreId, setSelectedMapStoreId] = useState<string>('munoz');
+  const [storeMapTargetType, setStoreMapTargetType] = useState<'wetmarket' | 'supermarket'>('wetmarket');
+
+  const openStoreMap = useCallback((targetType: 'wetmarket' | 'supermarket') => {
+    setStoreMapTargetType(targetType);
+    const defaultId = targetType === 'wetmarket' ? preferredWetMarketId : preferredSupermarketId;
+    setSelectedMapStoreId(defaultId);
+    setIsStoreMapOpen(true);
+  }, [preferredWetMarketId, preferredSupermarketId]);
 
   const activeWetMarket = useMemo(() => {
     return NEARBY_WET_MARKETS.find((m) => m.id === preferredWetMarketId) || NEARBY_WET_MARKETS[0];
@@ -777,6 +788,9 @@ export function HainProvider({ children }: { children: React.ReactNode }) {
         setIsStoreMapOpen,
         selectedMapStoreId,
         setSelectedMapStoreId,
+        storeMapTargetType,
+        setStoreMapTargetType,
+        openStoreMap,
         isSearchOpen,
         setIsSearchOpen,
         recentSearches,
