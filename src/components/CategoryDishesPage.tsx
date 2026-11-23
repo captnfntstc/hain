@@ -208,7 +208,9 @@ export default function CategoryDishesPage() {
 
         {categoryRecipes.length === 0 && (
           <div className="bg-white rounded-3xl p-8 text-center space-y-2 border border-stone-200/80 my-4 shadow-xs">
-            <div className="text-4xl">🍲</div>
+            <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center mx-auto">
+              <Soup className="w-6 h-6" />
+            </div>
             <div className="font-bold text-stone-800 text-sm">
               No dishes found under this category
             </div>

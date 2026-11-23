@@ -61,8 +61,8 @@ export default function ListTab() {
       <section aria-label="Shopping List Header" className="bg-gradient-to-b from-[var(--theme-banner-start)] to-[var(--theme-banner-end)] text-white px-5 pt-safe pb-6 rounded-b-[36px] shadow-md transition-all duration-300">
         <div className="flex items-center justify-between text-xs text-white/80 font-medium mb-3">
           <span>Active Grocery Run</span>
-          <div className="w-5 h-5 rounded-full overflow-hidden border border-white/30 shadow-sm flex items-center justify-center bg-white text-[10px]">
-            🇵🇭
+          <div className="w-5 h-5 rounded-full overflow-hidden border border-white/30 shadow-sm flex items-center justify-center bg-white/20 text-[9px] font-bold text-white">
+            PH
           </div>
         </div>
 
@@ -101,7 +101,7 @@ export default function ListTab() {
           <div className="flex items-center justify-between pt-2.5 text-xs text-stone-500">
             <span>{isTagalog ? 'Kabuuang Kailangan' : 'Total Needed'}: ₱{basketTotal.toFixed(0)}</span>
             <span className="font-bold text-emerald-600 dark:text-emerald-400">
-              {isWithinCap ? (isTagalog ? 'Pasok sa Budget ✓' : 'Within Budget ✓') : (isTagalog ? 'Lampas sa Cap' : 'Exceeds Cap')}
+              {isWithinCap ? (isTagalog ? 'Pasok sa Budget' : 'Within Budget') : (isTagalog ? 'Lampas sa Cap' : 'Exceeds Cap')}
             </span>
           </div>
         </div>

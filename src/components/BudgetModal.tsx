@@ -157,7 +157,7 @@ export default function BudgetModal() {
                   </div>
                 </div>
 
-                {/* Subtext Pill: 👥 About ₱150.00 per person */}
+                {/* Subtext Pill: About ₱150.00 per person */}
                 <div className="pt-4">
                   <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white text-stone-800 text-xs sm:text-sm font-semibold shadow-md border border-stone-200/50 whitespace-nowrap">
                     <Users className="w-4 h-4 text-stone-500 shrink-0" />
@@ -298,7 +298,7 @@ export default function BudgetModal() {
                   </div>
                 </div>
 
-                {/* Subtext Pill: 👥 About ₱150.00 per person */}
+                {/* Subtext Pill: About ₱150.00 per person */}
                 <div className="pt-4">
                   <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white text-stone-800 text-xs sm:text-sm font-semibold shadow-md border border-stone-200/50 whitespace-nowrap">
                     <Users className="w-4 h-4 text-stone-500 shrink-0" />

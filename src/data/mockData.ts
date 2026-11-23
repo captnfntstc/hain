@@ -67,7 +67,7 @@ export const DELIVERY_PLATFORMS: DeliveryPlatform[] = [
   {
     id: 'grabmart',
     name: 'GrabMart Express',
-    logo: '🚗',
+    logo: 'GM',
     deliveryFee: 49,
     eta: '20-30 mins',
     minimumSpend: 150,
@@ -76,7 +76,7 @@ export const DELIVERY_PLATFORMS: DeliveryPlatform[] = [
   {
     id: 'foodpanda',
     name: 'foodpanda shops',
-    logo: '🐼',
+    logo: 'FP',
     deliveryFee: 39,
     eta: '25-35 mins',
     minimumSpend: 120,
@@ -85,7 +85,7 @@ export const DELIVERY_PLATFORMS: DeliveryPlatform[] = [
   {
     id: 'metromart',
     name: 'MetroMart Supermarket',
-    logo: '🛒',
+    logo: 'MM',
     deliveryFee: 89,
     eta: '60 mins scheduled',
     minimumSpend: 300,
@@ -94,7 +94,7 @@ export const DELIVERY_PLATFORMS: DeliveryPlatform[] = [
   {
     id: 'zagana',
     name: 'Zagana Wet Market',
-    logo: '🥬',
+    logo: 'ZG',
     deliveryFee: 65,
     eta: 'Same-day Fresh Harvest',
     minimumSpend: 250,

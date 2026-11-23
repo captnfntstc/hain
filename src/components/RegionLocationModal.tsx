@@ -377,7 +377,7 @@ export default function RegionLocationModal() {
               <g transform="translate(505, 430)">
                 <rect x="-55" y="-14" width="110" height="28" rx="8" fill="#1E293B" stroke="#FFFFFF" strokeWidth="1.5" />
                 <text x="0" y="4" fontSize="10" fontWeight="bold" fill="#FFFFFF" textAnchor="middle">
-                  🚊 LRT-1 FPJ Station
+                  LRT-1 FPJ Station
                 </text>
               </g>
 
@@ -411,7 +411,7 @@ export default function RegionLocationModal() {
                 strokeLinecap="round"
               />
               <text x="550" y="495" fontSize="11" fontWeight="bold" fill="#B8381D" textAnchor="middle">
-                ★ Dangay St (Veterans Village)
+                Dangay St (Veterans Village)
               </text>
 
               {/* Bansalangin Street */}
@@ -456,7 +456,7 @@ export default function RegionLocationModal() {
               <g transform="translate(525, 465)">
                 <rect x="-40" y="-22" width="80" height="44" rx="8" fill="#FEE2E2" stroke="#EF4444" strokeWidth="1.5" />
                 <text x="0" y="-3" fontSize="9" fontWeight="bold" fill="#991B1B" textAnchor="middle">
-                  🏪 Muñoz Market
+                  Muñoz Market
                 </text>
                 <text x="0" y="11" fontSize="8" fill="#B91C1C" textAnchor="middle">
                   (Palengke)
@@ -532,7 +532,7 @@ export default function RegionLocationModal() {
                   
                   {/* Bubble Text */}
                   <text x="0" y="-22" fontSize="11" fontWeight="bold" fill="#FFFFFF" textAnchor="middle">
-                    📍 {selectedAnchor.shortName}
+                    {selectedAnchor.shortName}
                   </text>
                   <text x="0" y="-9" fontSize="9" fill="#FBBF24" textAnchor="middle">
                     {Math.hypot(pinPos.x - 525, pinPos.y - 465) < 90 ? '250m to Muñoz Wet Market' : 'Tap to adjust location pin'}

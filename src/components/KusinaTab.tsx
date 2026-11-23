@@ -93,8 +93,8 @@ export default function KusinaTab() {
       >
         <div className="flex items-center justify-between text-xs text-white/90 font-medium mb-3">
           <span className="font-sans font-bold tracking-[0.3em] text-xs">H A I N</span>
-          <div className="w-5 h-5 rounded-full overflow-hidden border border-white/40 shadow-sm flex items-center justify-center bg-white text-[10px]">
-            🇵🇭
+          <div className="w-5 h-5 rounded-full overflow-hidden border border-white/40 shadow-sm flex items-center justify-center bg-white/20 text-[9px] font-bold text-white">
+            PH
           </div>
         </div>
 
@@ -111,8 +111,8 @@ export default function KusinaTab() {
         {/* Dynamic Savings Stat Card */}
         <div className="mt-4 bg-white/15 backdrop-blur-md border border-white/25 rounded-2xl p-3.5 flex items-center justify-between text-white shadow-sm">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-white text-[#B8381D] flex items-center justify-center font-bold text-sm shadow-sm">
-              🧂
+            <div className="w-9 h-9 rounded-xl bg-white text-[#B8381D] flex items-center justify-center shadow-sm">
+              <CookingPot className="w-5 h-5 text-[#B8381D]" />
             </div>
             <div>
               <div className="text-[11px] font-medium text-white/90">

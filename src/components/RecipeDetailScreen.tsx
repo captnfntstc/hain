@@ -14,6 +14,7 @@ import {
   Users,
   Coins,
   CheckCheck,
+  Star,
 } from 'lucide-react';
 
 export default function RecipeDetailScreen() {
@@ -47,7 +48,7 @@ export default function RecipeDetailScreen() {
   const handleToggleBookmark = () => {
     const next = !isBookmarked;
     setIsBookmarked(next);
-    showToast(next ? 'Recipe saved to bookmarks! 🔖' : 'Recipe removed from bookmarks');
+    showToast(next ? 'Recipe saved to bookmarks!' : 'Recipe removed from bookmarks');
   };
 
   const handleShare = async () => {
@@ -66,7 +67,7 @@ export default function RecipeDetailScreen() {
     } else {
       try {
         await navigator.clipboard.writeText(window.location.href);
-        showToast('Link copied to clipboard! 📋');
+        showToast('Link copied to clipboard!');
       } catch {
         showToast('Shared recipe details!');
       }
@@ -144,7 +145,7 @@ export default function RecipeDetailScreen() {
 
               {/* Rating Pill Badge */}
               <div className="shrink-0 px-3 py-1 rounded-full bg-[#C29B63] text-white text-xs font-bold flex items-center gap-1 shadow-sm mt-0.5">
-                <span className="text-[13px] leading-none">★</span>
+                <Star className="w-3.5 h-3.5 text-white fill-white" />
                 <span className="leading-none">{activeRecipe.rating?.toFixed(1) || '4.8'}</span>
               </div>
             </div>
@@ -228,8 +229,8 @@ export default function RecipeDetailScreen() {
                 </span>
                 <div className="inline-flex items-center gap-1.5 text-stone-700">
                   <span className="inline-flex items-center gap-1 shrink-0">
-                    <span className="w-3.5 h-3.5 rounded bg-[#842A16] text-white flex items-center justify-center text-[8px] font-bold">
-                      ✓
+                    <span className="w-3.5 h-3.5 rounded bg-[#842A16] text-white flex items-center justify-center">
+                      <Check className="w-2.5 h-2.5 text-white stroke-[3]" />
                     </span>
                     <span className="font-medium">
                       {language === 'tl' ? 'Nabili na' : 'Purchased'}
@@ -237,8 +238,8 @@ export default function RecipeDetailScreen() {
                   </span>
                   <span className="text-stone-300">·</span>
                   <span className="inline-flex items-center gap-1 shrink-0">
-                    <span className="w-3.5 h-3.5 rounded bg-[#842A16]/20 text-[#842A16] flex items-center justify-center text-[8px] font-bold">
-                      ✕
+                    <span className="w-3.5 h-3.5 rounded bg-[#842A16]/20 text-[#842A16] flex items-center justify-center">
+                      <X className="w-2.5 h-2.5 text-[#842A16] stroke-[3]" />
                     </span>
                     <span className="font-medium">
                       {language === 'tl' ? 'May Stock' : 'In Stock'}
@@ -467,7 +468,7 @@ export default function RecipeDetailScreen() {
             onClick={handleStartCook}
             className="!rounded-full font-bold shadow-md !text-white text-sm"
           >
-            <span>Cook Now 🍳</span>
+            <span>Cook Now</span>
           </Button>
         </div>
       </div>

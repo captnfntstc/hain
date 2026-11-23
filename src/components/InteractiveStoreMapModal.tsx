@@ -563,7 +563,7 @@ export default function InteractiveStoreMapModal() {
                       fontWeight="bold" 
                       fontFamily="sans-serif"
                     >
-                      📍 {store.distanceKm} km • {travelTime}
+                      {store.distanceKm} km • {travelTime}
                     </text>
                   </g>
                 )}

@@ -3,7 +3,7 @@
 import React from 'react';
 import { useHain } from '../context/HainContext';
 import { COLOR_THEMES, PrimaryColorThemeId } from '../types/hain';
-import { Palette, X, Check, Sparkles } from 'lucide-react';
+import { Palette, X, Check, Sparkles, Calendar, Users } from 'lucide-react';
 
 export default function DeveloperOptionsModal() {
   const {
@@ -112,7 +112,7 @@ export default function DeveloperOptionsModal() {
                           style={{ borderColor: theme.headerIconBorder }}
                           className="w-5 h-5 rounded-full border flex items-center justify-center opacity-80"
                         >
-                          <span className="text-[9px]">📅</span>
+                          <Calendar className="w-2.5 h-2.5" />
                         </div>
                       </div>
                       <div className="font-serif font-bold text-xs tracking-tight leading-none truncate pr-8">
@@ -131,7 +131,7 @@ export default function DeveloperOptionsModal() {
                           style={{ backgroundColor: theme.badgeBg }}
                           className="w-5 h-5 rounded-full flex items-center justify-center shadow-xs"
                         >
-                          <span className="text-[8px] text-white font-bold">👥</span>
+                          <Users className="w-2.5 h-2.5 text-white" />
                         </div>
                       </div>
                     </div>

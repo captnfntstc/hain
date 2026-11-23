@@ -3,7 +3,7 @@
 import React from 'react';
 import { useHain } from '../context/HainContext';
 import { Recipe } from '../types/hain';
-import { Star, Users, Clock } from 'lucide-react';
+import { Star, Users, Clock, Check } from 'lucide-react';
 
 interface HorizontalRecipeCardProps {
   recipe: Recipe;
@@ -171,7 +171,7 @@ export default function HorizontalRecipeCard({
         {/* Dietary / Allergen Safe Badge at Bottom */}
         <div className="pt-2">
           <span className="bg-[#EAF3EB] text-[#2D6A4F] text-[10px] font-bold px-2.5 py-1 rounded-full inline-flex items-center gap-1 shadow-2xs">
-            <span>✓</span>
+            <Check className="w-3 h-3 text-[#2D6A4F] stroke-[2.5]" />
             <span>{dietarySafeText}</span>
           </span>
         </div>

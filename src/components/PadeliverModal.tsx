@@ -89,7 +89,9 @@ export default function PadeliverModal() {
                 }`}
               >
                 <div className="flex items-center gap-2.5">
-                  <span className="text-lg">{platform.logo}</span>
+                  <div className="w-8 h-8 rounded-lg bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-bold text-xs flex items-center justify-center shrink-0">
+                    {platform.logo}
+                  </div>
                   <div>
                     <div className="text-xs font-bold text-stone-900 dark:text-white leading-tight">
                       {platform.name}
@@ -126,7 +128,7 @@ export default function PadeliverModal() {
           <div className="text-right">
             <div className="text-[10px] text-stone-400">Cap: ₱{budgetCap.toLocaleString()}</div>
             <div className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-              {budgetCap >= grandTotalWithDelivery ? 'Pasok sa budget ✓' : 'Over budget'}
+              {budgetCap >= grandTotalWithDelivery ? 'Pasok sa budget' : 'Over budget'}
             </div>
           </div>
         </div>

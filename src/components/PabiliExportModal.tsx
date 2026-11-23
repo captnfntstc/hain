@@ -30,22 +30,22 @@ export default function PabiliExportModal() {
     ? `Ihahain: *${activeRecipe.localName || activeRecipe.title}*`
     : `Ihahain: *${activeRecipe.localName}* (${activeRecipe.title})`;
 
-  const pabiliText = `🛒 *PABILI PO (Hain Ulam Planner)*
+  const pabiliText = `*PABILI PO (Hain Ulam Planner)*
 ${recipeTitleLine}
 Target Budget Cap: ₱${budgetCap.toLocaleString()}.00
 
-📍 *STOP 1: ${activeWetMarket.name}*
+*STOP 1: ${activeWetMarket.name}*
 ${palengkeItems.map((i) => `• ${i.localName} ~ ₱${i.actualPrice || i.estimatedPrice}.00`).join('\n')}
 
 ${
   supermarketItems.length > 0
-    ? `📍 *STOP 2: ${activeSupermarket.name}*\n${supermarketItems
+    ? `*STOP 2: ${activeSupermarket.name}*\n${supermarketItems
         .map((i) => `• ${i.localName} ~ ₱${i.actualPrice || i.estimatedPrice}.00`)
         .join('\n')}\n`
     : ''
 }
-💰 *Estimated Total*: ₱${basketTotal.toFixed(0)}.00
-${remainingBudget > 0 ? `💵 *May sukli na*: ₱${remainingBudget.toFixed(0)}.00 mula sa ₱${budgetCap.toLocaleString()} budget!\n` : ''}
+*Estimated Total*: ₱${basketTotal.toFixed(0)}.00
+${remainingBudget > 0 ? `*May sukli na*: ₱${remainingBudget.toFixed(0)}.00 mula sa ₱${budgetCap.toLocaleString()} budget!\n` : ''}
 Salamat po! Ingat sa pag-uwi!`;
 
   const handleCopy = async () => {

@@ -13,7 +13,8 @@ import {
   TrendingUp,
   ChefHat,
   RotateCcw,
-  Star
+  Star,
+  Soup
 } from 'lucide-react';
 import { MOCK_RECIPES } from '../data/mockData';
 import { Recipe } from '../types/hain';
@@ -45,38 +46,38 @@ export default function SearchTab() {
 
   // Trending Pinoy Cravings for quick selection
   const trendingCravings = [
-    { label: 'Sinigang na Baboy', emoji: '🍲', query: 'Sinigang' },
-    { label: 'Kalderetang Baka', emoji: '🍛', query: 'Kaldereta' },
-    { label: 'Ginisang Monggo', emoji: '🥣', query: 'Monggo' },
-    { label: 'Tortang Talong', emoji: '🍆', query: 'Tortang Talong' },
-    { label: 'Chicken Tinola', emoji: '🍗', query: 'Tinola' },
-    { label: 'Sarciadong Bangus', emoji: '🐟', query: 'Sarciado' },
-    { label: 'Bistek Tagalog', emoji: '🥩', query: 'Bistek' },
+    { label: 'Sinigang na Baboy', query: 'Sinigang' },
+    { label: 'Kalderetang Baka', query: 'Kaldereta' },
+    { label: 'Ginisang Monggo', query: 'Monggo' },
+    { label: 'Tortang Talong', query: 'Tortang Talong' },
+    { label: 'Chicken Tinola', query: 'Tinola' },
+    { label: 'Sarciadong Bangus', query: 'Sarciado' },
+    { label: 'Bistek Tagalog', query: 'Bistek' },
   ];
 
   // In-House Ingredient Quick Searches (respecting selected language)
   const ingredientSearches = language === 'tl' ? [
-    { label: 'Talong', query: 'Talong', icon: '🍆' },
-    { label: 'Itlog', query: 'Itlog', icon: '🥚' },
-    { label: 'Manok', query: 'Manok', icon: '🍗' },
-    { label: 'Baboy', query: 'Baboy', icon: '🥩' },
-    { label: 'Baka', query: 'Baka', icon: '🥩' },
-    { label: 'Bangus', query: 'Bangus', icon: '🐟' },
-    { label: 'Monggo', query: 'Monggo', icon: '🥣' },
-    { label: 'Sayote', query: 'Sayote', icon: '🍈' },
-    { label: 'Kangkong', query: 'Kangkong', icon: '🥬' },
-    { label: 'Tokwa', query: 'Tokwa', icon: '🧈' },
+    { label: 'Talong', query: 'Talong' },
+    { label: 'Itlog', query: 'Itlog' },
+    { label: 'Manok', query: 'Manok' },
+    { label: 'Baboy', query: 'Baboy' },
+    { label: 'Baka', query: 'Baka' },
+    { label: 'Bangus', query: 'Bangus' },
+    { label: 'Monggo', query: 'Monggo' },
+    { label: 'Sayote', query: 'Sayote' },
+    { label: 'Kangkong', query: 'Kangkong' },
+    { label: 'Tokwa', query: 'Tokwa' },
   ] : [
-    { label: 'Eggplant', query: 'Eggplant', icon: '🍆' },
-    { label: 'Egg', query: 'Egg', icon: '🥚' },
-    { label: 'Chicken', query: 'Chicken', icon: '🍗' },
-    { label: 'Pork', query: 'Pork', icon: '🥩' },
-    { label: 'Beef', query: 'Beef', icon: '🥩' },
-    { label: 'Fish', query: 'Fish', icon: '🐟' },
-    { label: 'Mung Bean', query: 'Monggo', icon: '🥣' },
-    { label: 'Chayote', query: 'Sayote', icon: '🍈' },
-    { label: 'Spinach', query: 'Kangkong', icon: '🥬' },
-    { label: 'Tofu', query: 'Tofu', icon: '🧈' },
+    { label: 'Eggplant', query: 'Eggplant' },
+    { label: 'Egg', query: 'Egg' },
+    { label: 'Chicken', query: 'Chicken' },
+    { label: 'Pork', query: 'Pork' },
+    { label: 'Beef', query: 'Beef' },
+    { label: 'Fish', query: 'Fish' },
+    { label: 'Mung Bean', query: 'Monggo' },
+    { label: 'Chayote', query: 'Sayote' },
+    { label: 'Spinach', query: 'Kangkong' },
+    { label: 'Tofu', query: 'Tofu' },
   ];
 
   // Pure, basic search directly across ALL recipes in Hain (No carried-over home filters)
@@ -140,8 +141,8 @@ export default function SearchTab() {
       >
         <div className="flex items-center justify-between text-xs text-white/90 font-medium mb-2.5">
           <span className="font-sans font-bold tracking-[0.3em] text-xs">H A I N &bull; SEARCH</span>
-          <div className="w-5 h-5 rounded-full overflow-hidden border border-white/40 shadow-sm flex items-center justify-center bg-white text-[10px]">
-            🇵🇭
+          <div className="w-5 h-5 rounded-full overflow-hidden border border-white/40 shadow-sm flex items-center justify-center bg-white/20 text-[9px] font-bold text-white">
+            PH
           </div>
         </div>
 
@@ -258,7 +259,6 @@ export default function SearchTab() {
                     onClick={() => handleSelectQuery(dish.query)}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-stone-200/80 text-xs font-bold text-stone-800 hover:border-[#B8381D] hover:bg-[#B8381D]/5 tap-spring transition-all"
                   >
-                    <span>{dish.emoji}</span>
                     <span>{dish.label}</span>
                   </button>
                 ))}
@@ -282,9 +282,9 @@ export default function SearchTab() {
                   <button
                     key={ing.label}
                     onClick={() => handleSelectQuery(ing.query)}
-                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-stone-100/90 hover:bg-emerald-50 hover:text-emerald-800 hover:border-emerald-300 border border-stone-200/70 text-xs font-medium text-stone-700 tap-spring transition-colors"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-stone-100/90 hover:bg-emerald-50 hover:text-emerald-800 hover:border-emerald-300 border border-stone-200/70 text-xs font-medium text-stone-700 tap-spring transition-colors"
                   >
-                    <span>{ing.icon}</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                     <span>{ing.label}</span>
                   </button>
                 ))}
@@ -311,7 +311,9 @@ export default function SearchTab() {
             {/* Zero Matches State */}
             {searchResults.length === 0 ? (
               <div className="bg-white rounded-2xl p-8 text-center space-y-3 border border-stone-200/80 shadow-none my-4">
-                <div className="text-4xl">🍲</div>
+                <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center mx-auto">
+                  <Soup className="w-6 h-6" />
+                </div>
                 <h3 className="font-sans font-bold text-base text-stone-800">
                   {language === 'en' ? 'No matching dishes found' : 'Walang nahanap na ulam'}
                 </h3>

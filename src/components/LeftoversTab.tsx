@@ -16,8 +16,8 @@ export default function LeftoversTab() {
       <section aria-label="Leftovers Header" className="bg-gradient-to-b from-[var(--theme-banner-start)] to-[var(--theme-banner-end)] text-white px-5 pt-safe pb-6 rounded-b-[36px] shadow-md transition-all duration-300">
         <div className="flex items-center justify-between text-xs text-white/80 font-medium mb-3">
           <span>Sagip-Ulam Engine</span>
-          <div className="w-5 h-5 rounded-full overflow-hidden border border-white/30 shadow-sm flex items-center justify-center bg-white text-[10px]">
-            🇵🇭
+          <div className="w-5 h-5 rounded-full overflow-hidden border border-white/30 shadow-sm flex items-center justify-center bg-white/20 text-[9px] font-bold text-white">
+            PH
           </div>
         </div>
 

@@ -12,6 +12,9 @@ import {
   Star, 
   Sparkles,
   ChefHat,
+  Sun,
+  Moon,
+  Sunrise,
   ChevronRight as ChevronRightIcon
 } from 'lucide-react';
 import { Recipe } from '../types/hain';
@@ -49,14 +52,14 @@ export default function CalendarHistoryPage() {
       {
         id: 'nov20-lunch',
         timeOfDay: 'lunch',
-        timeLabel: language === 'en' ? '☀️ Lunch' : '☀️ Tanghalian',
+        timeLabel: language === 'en' ? 'Lunch' : 'Tanghalian',
         dotColor: 'bg-orange-500',
         recipe: MOCK_RECIPES[2], // Ginisang Monggo
       },
       {
         id: 'nov20-dinner',
         timeOfDay: 'dinner',
-        timeLabel: language === 'en' ? '🌙 Dinner' : '🌙 Hapunan',
+        timeLabel: language === 'en' ? 'Dinner' : 'Hapunan',
         dotColor: 'bg-[#B8381D]',
         recipe: MOCK_RECIPES[0], // Kalderetang Baka
       },
@@ -65,21 +68,21 @@ export default function CalendarHistoryPage() {
       {
         id: 'nov19-breakfast',
         timeOfDay: 'morning',
-        timeLabel: language === 'en' ? '🌅 Breakfast' : '🌅 Umagahan',
+        timeLabel: language === 'en' ? 'Breakfast' : 'Umagahan',
         dotColor: 'bg-amber-400',
         recipe: MOCK_RECIPES[3], // Tortang Talong
       },
       {
         id: 'nov19-lunch',
         timeOfDay: 'lunch',
-        timeLabel: language === 'en' ? '☀️ Lunch' : '☀️ Tanghalian',
+        timeLabel: language === 'en' ? 'Lunch' : 'Tanghalian',
         dotColor: 'bg-orange-500',
         recipe: MOCK_RECIPES[4], // Chicken Tinola
       },
       {
         id: 'nov19-dinner',
         timeOfDay: 'dinner',
-        timeLabel: language === 'en' ? '🌙 Dinner' : '🌙 Hapunan',
+        timeLabel: language === 'en' ? 'Dinner' : 'Hapunan',
         dotColor: 'bg-[#B8381D]',
         recipe: MOCK_RECIPES[1], // Sinigang na Baboy
       },
@@ -88,14 +91,14 @@ export default function CalendarHistoryPage() {
       {
         id: 'nov18-lunch',
         timeOfDay: 'lunch',
-        timeLabel: language === 'en' ? '☀️ Lunch' : '☀️ Tanghalian',
+        timeLabel: language === 'en' ? 'Lunch' : 'Tanghalian',
         dotColor: 'bg-orange-500',
         recipe: MOCK_RECIPES[7], // Bistek Tagalog
       },
       {
         id: 'nov18-dinner',
         timeOfDay: 'dinner',
-        timeLabel: language === 'en' ? '🌙 Dinner' : '🌙 Hapunan',
+        timeLabel: language === 'en' ? 'Dinner' : 'Hapunan',
         dotColor: 'bg-[#B8381D]',
         recipe: MOCK_RECIPES[5], // Sarciadong Bangus
       },
@@ -104,14 +107,14 @@ export default function CalendarHistoryPage() {
       {
         id: 'nov16-lunch',
         timeOfDay: 'lunch',
-        timeLabel: language === 'en' ? '☀️ Lunch' : '☀️ Tanghalian',
+        timeLabel: language === 'en' ? 'Lunch' : 'Tanghalian',
         dotColor: 'bg-orange-500',
         recipe: MOCK_RECIPES[6], // Adobong Sitaw at Tokwa
       },
       {
         id: 'nov16-dinner',
         timeOfDay: 'dinner',
-        timeLabel: language === 'en' ? '🌙 Dinner' : '🌙 Hapunan',
+        timeLabel: language === 'en' ? 'Dinner' : 'Hapunan',
         dotColor: 'bg-[#B8381D]',
         recipe: MOCK_RECIPES[5], // Tinolang Manok
       },
@@ -120,14 +123,14 @@ export default function CalendarHistoryPage() {
       {
         id: 'nov14-lunch',
         timeOfDay: 'lunch',
-        timeLabel: language === 'en' ? '☀️ Lunch' : '☀️ Tanghalian',
+        timeLabel: language === 'en' ? 'Lunch' : 'Tanghalian',
         dotColor: 'bg-orange-500',
         recipe: MOCK_RECIPES[4], // Sarciadong Bangus
       },
       {
         id: 'nov14-dinner',
         timeOfDay: 'dinner',
-        timeLabel: language === 'en' ? '🌙 Dinner' : '🌙 Hapunan',
+        timeLabel: language === 'en' ? 'Dinner' : 'Hapunan',
         dotColor: 'bg-[#B8381D]',
         recipe: MOCK_RECIPES[7], // Sinigang na Hipon
       },
@@ -136,7 +139,7 @@ export default function CalendarHistoryPage() {
       {
         id: 'nov12-dinner',
         timeOfDay: 'dinner',
-        timeLabel: language === 'en' ? '🌙 Dinner' : '🌙 Hapunan',
+        timeLabel: language === 'en' ? 'Dinner' : 'Hapunan',
         dotColor: 'bg-[#B8381D]',
         recipe: MOCK_RECIPES[3], // Tortang Talong with Giniling
       },
@@ -145,7 +148,7 @@ export default function CalendarHistoryPage() {
       {
         id: 'nov10-lunch',
         timeOfDay: 'lunch',
-        timeLabel: language === 'en' ? '☀️ Lunch' : '☀️ Tanghalian',
+        timeLabel: language === 'en' ? 'Lunch' : 'Tanghalian',
         dotColor: 'bg-orange-500',
         recipe: MOCK_RECIPES[2], // Ginisang Monggo
       },
@@ -154,14 +157,14 @@ export default function CalendarHistoryPage() {
       {
         id: 'nov8-breakfast',
         timeOfDay: 'morning',
-        timeLabel: language === 'en' ? '🌅 Breakfast' : '🌅 Umagahan',
+        timeLabel: language === 'en' ? 'Breakfast' : 'Umagahan',
         dotColor: 'bg-amber-400',
         recipe: MOCK_RECIPES[3], // Tortang Talong
       },
       {
         id: 'nov8-dinner',
         timeOfDay: 'dinner',
-        timeLabel: language === 'en' ? '🌙 Dinner' : '🌙 Hapunan',
+        timeLabel: language === 'en' ? 'Dinner' : 'Hapunan',
         dotColor: 'bg-[#B8381D]',
         recipe: MOCK_RECIPES[0], // Kalderetang Baka
       },
@@ -170,7 +173,7 @@ export default function CalendarHistoryPage() {
       {
         id: 'nov5-lunch',
         timeOfDay: 'lunch',
-        timeLabel: language === 'en' ? '☀️ Lunch' : '☀️ Tanghalian',
+        timeLabel: language === 'en' ? 'Lunch' : 'Tanghalian',
         dotColor: 'bg-orange-500',
         recipe: MOCK_RECIPES[4], // Chicken Tinola
       },
@@ -179,7 +182,7 @@ export default function CalendarHistoryPage() {
       {
         id: 'nov2-dinner',
         timeOfDay: 'dinner',
-        timeLabel: language === 'en' ? '🌙 Dinner' : '🌙 Hapunan',
+        timeLabel: language === 'en' ? 'Dinner' : 'Hapunan',
         dotColor: 'bg-[#B8381D]',
         recipe: MOCK_RECIPES[1], // Sinigang na Baboy
       },
@@ -448,14 +451,17 @@ export default function CalendarHistoryPage() {
 
                     <div className="min-w-0 flex-1">
                       {/* Time of day pill */}
-                      <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full mb-1 ${
+                      <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-full mb-1 ${
                         meal.timeOfDay === 'morning'
                           ? 'bg-amber-100 text-amber-800'
                           : meal.timeOfDay === 'lunch'
                           ? 'bg-orange-100 text-orange-800'
                           : 'bg-rose-100 text-[#B8381D]'
                       }`}>
-                        {meal.timeLabel}
+                        {meal.timeOfDay === 'morning' ? <Sunrise className="w-3 h-3" /> :
+                         meal.timeOfDay === 'lunch' ? <Sun className="w-3 h-3" /> :
+                         <Moon className="w-3 h-3" />}
+                        <span>{meal.timeLabel}</span>
                       </span>
 
                       {/* Recipe Title */}

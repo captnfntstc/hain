@@ -95,7 +95,7 @@ export default function MoreTab() {
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const [newMemberName, setNewMemberName] = useState('');
   const [newMemberRole, setNewMemberRole] = useState('Child');
-  const [newMemberAvatar, setNewMemberAvatar] = useState('🧒');
+  const [newMemberAvatar, setNewMemberAvatar] = useState('G');
   const [selectedAllergens, setSelectedAllergens] = useState<string[]>([]);
   const [selectedDiets, setSelectedDiets] = useState<string[]>([]);
 
@@ -267,8 +267,8 @@ export default function MoreTab() {
           >
             <div className="flex items-center justify-between text-xs text-white/90 font-medium mb-3">
               <span className="font-sans font-bold tracking-[0.3em] text-xs">H A I N</span>
-              <div className="w-5 h-5 rounded-full overflow-hidden border border-white/40 shadow-sm flex items-center justify-center bg-white text-[10px]">
-                🇵🇭
+              <div className="w-5 h-5 rounded-full overflow-hidden border border-white/40 shadow-sm flex items-center justify-center bg-white/20 text-[9px] font-bold text-white">
+                PH
               </div>
             </div>
 
@@ -281,8 +281,8 @@ export default function MoreTab() {
               onClick={() => setCurrentView('profile')}
               className="flex items-center gap-3.5 bg-white/15 hover:bg-white/20 backdrop-blur-md border border-white/25 rounded-2xl p-3.5 text-white shadow-sm cursor-pointer tap-spring transition-all"
             >
-              <div className="w-12 h-12 rounded-full bg-white text-[#B8381D] flex items-center justify-center text-xl shadow-md border-2 border-white/60 shrink-0">
-                👩‍🍳
+              <div className="w-12 h-12 rounded-full bg-white text-[#B8381D] flex items-center justify-center shadow-md border-2 border-white/60 shrink-0">
+                <User className="w-6 h-6 text-[#B8381D]" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
@@ -446,11 +446,11 @@ export default function MoreTab() {
             {/* Avatar & Achievements Summary */}
             <div className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none text-center space-y-3">
               <div className="relative inline-block">
-                <div className="w-16 h-16 rounded-full bg-[#FDECE8] text-3xl flex items-center justify-center mx-auto border-2 border-white shadow-sm">
-                  👩‍🍳
+                <div className="w-16 h-16 rounded-full bg-[#FDECE8] text-[#B8381D] flex items-center justify-center mx-auto border-2 border-white shadow-sm">
+                  <User className="w-8 h-8" />
                 </div>
-                <span className="absolute bottom-0 right-0 bg-emerald-500 text-white p-0.5 rounded-full text-[9px] border-2 border-white">
-                  ✓
+                <span className="absolute bottom-0 right-0 bg-emerald-500 text-white p-0.5 rounded-full border-2 border-white">
+                  <Check className="w-2.5 h-2.5" />
                 </span>
               </div>
               <div>
@@ -618,7 +618,9 @@ export default function MoreTab() {
                     className="p-3.5 px-4 flex items-start justify-between gap-3"
                   >
                     <div className="flex items-start gap-3">
-                      <span className="text-2xl">{member.avatar}</span>
+                      <div className="w-8 h-8 rounded-full bg-stone-100 border border-stone-200 text-stone-600 flex items-center justify-center shrink-0 mt-0.5">
+                        <User className="w-4 h-4" />
+                      </div>
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-sans font-bold text-sm text-stone-900">
@@ -718,249 +720,180 @@ export default function MoreTab() {
                 {language === 'tl' ? 'Palengke at Badyet' : 'Market & Budget'}
               </h1>
             </div>
-            <p className="text-xs text-white/85 pl-12 font-sans leading-relaxed">
-              {language === 'tl' 
-                ? 'I-ayos ang lokasyon ng bahay, paboritong bilihan, paraan ng biyahe, at target na badyet.'
-                : 'Configure your home address, preferred markets, travel mode, and daily budget.'}
-            </p>
           </section>
 
           <div className="px-4 pt-4 space-y-5">
 
             {/* ======================================================= */}
-            {/* GROUP 1: LOCATION & TRAVEL (Lokasyon at Pagbiyahe)      */}
+            {/* GROUP 1: LOCATION & TRAVEL (Zero Emojis, Zero Subs)     */}
             {/* ======================================================= */}
-            <div className="space-y-2">
-              <div className="px-1.5">
-                <h2 className="text-[11px] font-bold uppercase tracking-wider text-stone-500">
-                  {language === 'tl' ? '📍 Lokasyon at Pagbiyahe' : '📍 Location & Travel'}
+            <div className="space-y-1.5">
+              <div className="px-1">
+                <h2 className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                  {language === 'tl' ? 'Lokasyon at Pagbiyahe' : 'Location & Travel'}
                 </h2>
-                <p className="text-[11px] text-stone-400">
-                  {language === 'tl' 
-                    ? 'Pinagbabatayan ng distansya at oras papunta sa mga pamilihan.'
-                    : 'Calculates real-world distance, commute times, and traffic from home.'}
-                </p>
               </div>
 
-              <div className="bg-white rounded-[24px] border border-stone-200/90 divide-y divide-stone-100 overflow-hidden shadow-2xs">
-                {/* Row 1: Home Address / GPS Pin */}
+              <div className="bg-white rounded-[22px] border border-stone-200/90 divide-y divide-stone-100 overflow-hidden shadow-2xs">
+                {/* Row 1: Home Address */}
                 <div 
                   onClick={() => setIsRegionModalOpen(true)}
-                  className="p-4 flex items-start gap-3.5 cursor-pointer tap-spring hover:bg-stone-50/80 transition-colors"
+                  className="p-3.5 px-4 flex items-center justify-between gap-3 cursor-pointer tap-spring hover:bg-stone-50/80 transition-colors"
                 >
-                  <div className="w-10 h-10 rounded-2xl bg-rose-50 border border-rose-100 text-[#B8381D] flex items-center justify-center shrink-0 mt-0.5">
-                    <MapPin className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">
-                        {language === 'tl' ? 'Address ng Bahay (Home GPS Pin)' : 'Home Address / GPS Pin'}
-                      </span>
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="w-9 h-9 rounded-xl bg-rose-50 border border-rose-100 text-[#B8381D] flex items-center justify-center shrink-0">
+                      <MapPin className="w-4 h-4" />
                     </div>
-                    <div className="text-sm font-bold text-stone-900 truncate mt-0.5">
-                      {userAddress.split(',')[0]}
+                    <div className="min-w-0">
+                      <div className="text-[10px] uppercase font-bold tracking-wider text-stone-400 leading-none">
+                        {language === 'tl' ? 'Address ng Bahay' : 'Home Address'}
+                      </div>
+                      <div className="text-xs sm:text-sm font-bold text-stone-900 truncate mt-1">
+                        {userAddress}
+                      </div>
                     </div>
-                    <p className="text-xs text-stone-500 truncate mt-0.5">
-                      {userAddress}
-                    </p>
-                    <p className="text-[11px] text-amber-800 dark:text-amber-400 font-medium mt-1">
-                      {language === 'tl' 
-                        ? 'Pinagmumulan ng biyahe para sa pinakamalapit na palengke'
-                        : 'Starting point used to calculate distances to nearest markets'}
-                    </p>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-stone-400 shrink-0 mt-2" />
+                  <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
                 </div>
 
-                {/* Row 2: Travel Mode / Transportation */}
+                {/* Row 2: Mode of Transportation */}
                 <div 
                   onClick={() => setCurrentView('transport')}
-                  className="p-4 flex items-start gap-3.5 cursor-pointer tap-spring hover:bg-stone-50/80 transition-colors"
+                  className="p-3.5 px-4 flex items-center justify-between gap-3 cursor-pointer tap-spring hover:bg-stone-50/80 transition-colors"
                 >
-                  <div className="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
-                    <Navigation className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">
-                        {language === 'tl' ? 'Paraan ng Pamamalengke' : 'Mode of Transportation'}
-                      </span>
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                      <Navigation className="w-4 h-4" />
                     </div>
-                    <div className="text-sm font-bold text-stone-900 flex items-center gap-2 mt-0.5">
-                      <span>
-                        {transportMode === 'dynamic' ? (language === 'tl' ? 'Dynamic (Flexible: Lakad, Commute, o Kotse)' : 'Dynamic (Flexible: Walk, Commute, or Car)') :
-                         transportMode === 'walk' ? (language === 'tl' ? 'Lakad Lang (0-15 mins • ₱0 Pamasahe)' : 'Walking Only (0-15 mins • ₱0 Fare)') :
-                         transportMode === 'commute' ? (language === 'tl' ? 'Commute (Jeep / Bus / Trike)' : 'Public Transit (Jeep, Bus, Trike)') :
-                         (language === 'tl' ? 'Kotse o Motor (Personal Vehicle)' : 'Car or Motorcycle')}
-                      </span>
+                    <div className="min-w-0">
+                      <div className="text-[10px] uppercase font-bold tracking-wider text-stone-400 leading-none">
+                        {language === 'tl' ? 'Paraan ng Pagpunta' : 'Mode of Transportation'}
+                      </div>
+                      <div className="text-xs sm:text-sm font-bold text-stone-900 truncate mt-1">
+                        {transportMode === 'dynamic' ? (language === 'tl' ? 'Dynamic (Flexible / Kahit ano)' : 'Dynamic (Flexible / Any)') :
+                         transportMode === 'walk' ? (language === 'tl' ? 'Lakad Lang (Walking)' : 'Walking Only') :
+                         transportMode === 'commute' ? (language === 'tl' ? 'Commute (Jeep / Bus / Trike)' : 'Public Transit (Commute)') :
+                         (language === 'tl' ? 'Kotse o Motor' : 'Car / Motorcycle')}
+                      </div>
                     </div>
-                    <p className="text-[11px] text-stone-500 mt-1">
-                      {transportMode === 'dynamic'
-                        ? (language === 'tl' 
-                            ? 'Kusang umaakma depende sa layo: lakad pag malapit, jeep/kotse pag malayo.' 
-                            : 'Automatically adapts based on proximity: walks if close, transit if farther.')
-                        : (language === 'tl'
-                            ? 'Dito nakabatay ang kalkulasyon ng minuto sa biyahe at traffic warnings.'
-                            : 'Travel duration and traffic delay warnings are calculated for this mode.')}
-                    </p>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-stone-400 shrink-0 mt-2" />
+                  <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
                 </div>
               </div>
             </div>
 
             {/* ======================================================= */}
-            {/* GROUP 2: PREFERRED MARKETS (Mga Paboritong Bilihan)     */}
+            {/* GROUP 2: PREFERRED MARKETS (Zero Emojis, Zero Subs)     */}
             {/* ======================================================= */}
-            <div className="space-y-2">
-              <div className="px-1.5">
-                <h2 className="text-[11px] font-bold uppercase tracking-wider text-stone-500">
-                  {language === 'tl' ? '🏪 Mga Paboritong Bilihan' : '🏪 Preferred Markets & Groceries'}
+            <div className="space-y-1.5">
+              <div className="px-1">
+                <h2 className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                  {language === 'tl' ? 'Mga Paboritong Bilihan' : 'Preferred Markets'}
                 </h2>
-                <p className="text-[11px] text-stone-400 leading-tight mt-0.5">
-                  {language === 'tl' 
-                    ? 'Magkahiwalay ang palengke (sariwang karne/gulay) at supermarket (sachets, mantika, de-lata).'
-                    : 'Split into Wet Market (fresh meat/produce) and Supermarket (staples, oil, sachets).'}
-                </p>
               </div>
 
-              <div className="bg-white rounded-[24px] border border-stone-200/90 divide-y divide-stone-100 overflow-hidden shadow-2xs">
-                {/* Row 1: Preferred Wet Market (Palengke) */}
+              <div className="bg-white rounded-[22px] border border-stone-200/90 divide-y divide-stone-100 overflow-hidden shadow-2xs">
+                {/* Row 1: Wet Market */}
                 <div 
                   onClick={() => openStoreMap('wetmarket')}
-                  className="p-4 flex items-start gap-3.5 cursor-pointer tap-spring hover:bg-stone-50/80 transition-colors"
+                  className="p-3.5 px-4 flex items-center justify-between gap-3 cursor-pointer tap-spring hover:bg-stone-50/80 transition-colors"
                 >
-                  <div className="w-10 h-10 rounded-2xl bg-orange-50 border border-orange-100 text-[#C2410C] flex items-center justify-center shrink-0 mt-0.5">
-                    <Store className="w-5 h-5" />
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="w-9 h-9 rounded-xl bg-orange-50 border border-orange-100 text-[#C2410C] flex items-center justify-center shrink-0">
+                      <Store className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[10px] uppercase font-bold text-[#C2410C] leading-none">
+                        {language === 'tl' ? 'Palengke' : 'Wet Market'}
+                      </div>
+                      <div className="text-xs sm:text-sm font-bold text-stone-900 truncate mt-1">
+                        {activeWetMarket.name}
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] uppercase font-bold text-[#C2410C] bg-orange-100/70 px-2 py-0.5 rounded-md">
-                        {language === 'tl' ? 'Palengke • Wet Market' : 'Wet Market'}
-                      </span>
-                    </div>
-                    <div className="text-sm font-bold text-stone-900 truncate mt-1">
-                      {activeWetMarket.name}
-                    </div>
-                    <div className="text-xs text-stone-600 font-medium mt-0.5">
-                      {activeWetMarket.distanceKm} km • {formatStoreTravelTime(activeWetMarket, transportMode)}
-                      {activeWetMarket.trafficLevel === 'Heavy' && (
-                        <span className="text-rose-600 font-bold ml-1.5">⚠️ Mabigat ang trapiko</span>
-                      )}
-                    </div>
-                    <p className="text-[11px] text-stone-500 mt-1">
-                      {language === 'tl'
-                        ? 'Pinagbabatayan ng presyo ng sariwang baboy, manok, baka, isda, at gulay.'
-                        : 'Source for daily wholesale rates on fresh meat, fish, and vegetables.'}
-                    </p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-stone-400 shrink-0 mt-2" />
+                  <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
                 </div>
 
-                {/* Row 2: Preferred Supermarket (Grocery) */}
+                {/* Row 2: Supermarket */}
                 <div 
                   onClick={() => openStoreMap('supermarket')}
-                  className="p-4 flex items-start gap-3.5 cursor-pointer tap-spring hover:bg-stone-50/80 transition-colors"
+                  className="p-3.5 px-4 flex items-center justify-between gap-3 cursor-pointer tap-spring hover:bg-stone-50/80 transition-colors"
                 >
-                  <div className="w-10 h-10 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
-                    <ShoppingBag className="w-5 h-5" />
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                      <ShoppingBag className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[10px] uppercase font-bold text-emerald-700 leading-none">
+                        {language === 'tl' ? 'Supermarket' : 'Supermarket'}
+                      </div>
+                      <div className="text-xs sm:text-sm font-bold text-stone-900 truncate mt-1">
+                        {activeSupermarket.name}
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] uppercase font-bold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded-md">
-                        {language === 'tl' ? 'Supermarket • Grocery' : 'Supermarket'}
-                      </span>
-                    </div>
-                    <div className="text-sm font-bold text-stone-900 truncate mt-1">
-                      {activeSupermarket.name}
-                    </div>
-                    <div className="text-xs text-stone-600 font-medium mt-0.5">
-                      {activeSupermarket.distanceKm} km • {formatStoreTravelTime(activeSupermarket, transportMode)} • {activeSupermarket.badge}
-                    </div>
-                    <p className="text-[11px] text-stone-500 mt-1">
-                      {language === 'tl'
-                        ? 'Pinagbabatayan ng presyo ng mantika, toyo, suka, sachet seasoning, at de-lata.'
-                        : 'Source for packaged condiments, cooking oil, canned goods, and seasonings.'}
-                    </p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-stone-400 shrink-0 mt-2" />
+                  <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
                 </div>
               </div>
             </div>
 
             {/* ======================================================= */}
-            {/* GROUP 3: MEAL BUDGET & STAPLES (Badyet at Bigas)        */}
+            {/* GROUP 3: MEAL BUDGET & STAPLES (Zero Emojis, Zero Subs) */}
             {/* ======================================================= */}
-            <div className="space-y-2">
-              <div className="px-1.5">
-                <h2 className="text-[11px] font-bold uppercase tracking-wider text-stone-500">
-                  {language === 'tl' ? '💰 Badyet at Bigas' : '💰 Meal Budget & Staples'}
+            <div className="space-y-1.5">
+              <div className="px-1">
+                <h2 className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                  {language === 'tl' ? 'Badyet at Bigas' : 'Meal Budget & Staples'}
                 </h2>
-                <p className="text-[11px] text-stone-400 leading-tight mt-0.5">
-                  {language === 'tl' 
-                    ? 'Limitasyon sa araw-araw na gastos at karagdagang alokasyon para sa kanin.'
-                    : 'Target daily meal expenditure cap and rice inclusion settings.'}
-                </p>
               </div>
 
-              <div className="bg-white rounded-[24px] border border-stone-200/90 divide-y divide-stone-100 overflow-hidden shadow-2xs">
-                {/* Row 1: Target Daily Budget & Servings */}
+              <div className="bg-white rounded-[22px] border border-stone-200/90 divide-y divide-stone-100 overflow-hidden shadow-2xs">
+                {/* Row 1: Daily Budget */}
                 <div 
                   onClick={() => {
                     setBudgetModalStep(1);
                     setIsBudgetModalOpen(true);
                   }}
-                  className="p-4 flex items-start gap-3.5 cursor-pointer tap-spring hover:bg-stone-50/80 transition-colors"
+                  className="p-3.5 px-4 flex items-center justify-between gap-3 cursor-pointer tap-spring hover:bg-stone-50/80 transition-colors"
                 >
-                  <div className="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-100 text-[#B8381D] flex items-center justify-center shrink-0 mt-0.5">
-                    <Coins className="w-5 h-5" />
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-100 text-[#B8381D] flex items-center justify-center shrink-0">
+                      <Coins className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[10px] uppercase font-bold tracking-wider text-stone-400 leading-none">
+                        {language === 'tl' ? 'Target na Badyet' : 'Daily Meal Budget'}
+                      </div>
+                      <div className="text-xs sm:text-sm font-bold text-stone-900 truncate mt-1 flex items-center gap-2">
+                        <span>₱{budgetCap.toLocaleString()} / araw</span>
+                        <span className="text-stone-300 font-normal">•</span>
+                        <span className="text-stone-600 font-semibold">{servingsPax} Pax</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">
-                        {language === 'tl' ? 'Target na Badyet sa Pagkain' : 'Daily Meal Budget Ceiling'}
-                      </span>
-                    </div>
-                    <div className="text-base font-bold text-stone-900 mt-0.5 flex items-center gap-2">
-                      <span>₱{budgetCap.toLocaleString()} / araw</span>
-                      <span className="text-stone-300 font-normal">•</span>
-                      <span className="text-sm font-semibold text-stone-700">{servingsPax} Kasalo (Pax)</span>
-                    </div>
-                    <div className="text-xs font-semibold text-[#B8381D] mt-0.5">
-                      {language === 'tl' ? 'Tinatayang' : 'About'} ₱{Math.round(costPerPerson)} {language === 'tl' ? 'bawat tao' : 'per person'}
-                    </div>
-                    <p className="text-[11px] text-stone-500 mt-1">
-                      {language === 'tl'
-                        ? 'Sinasala ang mga ulam sa Home para siguruhing pasok sa bulsa ng pamilya.'
-                        : 'Filters recommended dishes on Home to stay strictly within your household budget.'}
-                    </p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-stone-400 shrink-0 mt-2" />
+                  <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
                 </div>
 
-                {/* Row 2: Rice Cost in Meal Calculation */}
-                <div className="p-4 space-y-3">
-                  <div className="flex items-start gap-3.5">
-                    <div className="w-10 h-10 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 flex items-center justify-center shrink-0 mt-0.5">
-                      <Flame className="w-5 h-5 text-amber-700" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">
-                        {language === 'tl' ? 'Kalkulasyon ng Bigas' : 'Rice In Meal Calculation'}
-                      </span>
-                      <h3 className="text-sm font-bold text-stone-900 mt-0.5">
-                        {language === 'tl' ? 'Isama ang bigas sa gastos ng ulam?' : 'Factor rice into meal cost?'}
-                      </h3>
-                      <p className="text-[11px] text-stone-500 mt-0.5">
-                        {language === 'tl'
-                          ? 'Awtomatikong idinadagdag ang 1/2 kg o 1 kg na bigas sa presyo ng bawat ulam.'
-                          : 'Automatically factors 1/2 kg or 1 kg well-milled rice into each recipe budget.'}
-                      </p>
+                {/* Row 2: Rice in Meal Cost */}
+                <div className="p-3.5 px-4 space-y-2.5">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      <div className="w-9 h-9 rounded-xl bg-stone-100 border border-stone-200 text-amber-700 flex items-center justify-center shrink-0">
+                        <Flame className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-[10px] uppercase font-bold tracking-wider text-stone-400 leading-none">
+                          {language === 'tl' ? 'Alokasyon ng Bigas' : 'Rice Allocation'}
+                        </div>
+                        <div className="text-xs sm:text-sm font-bold text-stone-900 truncate mt-1">
+                          {language === 'tl' ? 'Isama ang bigas sa gastos ng ulam' : 'Include rice in meal cost'}
+                        </div>
+                      </div>
                     </div>
                     <button
                       type="button"
                       onClick={() => setIncludeRice(!includeRice)}
-                      className={`w-11 h-6 rounded-full transition-colors relative tap-spring shrink-0 ml-2 mt-1 ${
+                      className={`w-11 h-6 rounded-full transition-colors relative tap-spring shrink-0 ml-2 ${
                         includeRice ? 'bg-emerald-600' : 'bg-stone-300'
                       }`}
                       aria-label="Toggle include rice"
@@ -972,37 +905,34 @@ export default function MoreTab() {
                   </div>
 
                   {includeRice && (
-                    <div className="pl-13 pt-1 border-t border-stone-100 space-y-2">
-                      <label className="text-[10px] uppercase font-bold text-stone-400 block">
-                        {language === 'tl' ? 'Piliin ang Karaniwang Bigas na Binibili:' : 'Select Your Daily Rice Variety:'}
-                      </label>
+                    <div className="pl-12 pt-1 border-t border-stone-100">
                       <div className="grid grid-cols-2 gap-2">
                         <button
                           type="button"
                           onClick={() => setRiceType('sinandomeng')}
-                          className={`p-2.5 rounded-xl border text-xs font-bold transition-all tap-spring text-left flex flex-col gap-0.5 ${
+                          className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all tap-spring flex items-center justify-between ${
                             riceType === 'sinandomeng'
                               ? 'bg-[#B8381D] text-white border-[#B8381D] shadow-xs'
                               : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
                           }`}
                         >
-                          <span className="leading-tight">Sinandomeng</span>
-                          <span className={`text-[10px] ${riceType === 'sinandomeng' ? 'text-white/80' : 'text-stone-400'}`}>
-                            +₱28 / half kg • Standard
+                          <span>Sinandomeng</span>
+                          <span className={`text-[10px] font-normal ${riceType === 'sinandomeng' ? 'text-white/80' : 'text-stone-400'}`}>
+                            +₱28
                           </span>
                         </button>
                         <button
                           type="button"
                           onClick={() => setRiceType('dinorado')}
-                          className={`p-2.5 rounded-xl border text-xs font-bold transition-all tap-spring text-left flex flex-col gap-0.5 ${
+                          className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all tap-spring flex items-center justify-between ${
                             riceType === 'dinorado'
                               ? 'bg-[#B8381D] text-white border-[#B8381D] shadow-xs'
                               : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
                           }`}
                         >
-                          <span className="leading-tight">Dinorado</span>
-                          <span className={`text-[10px] ${riceType === 'dinorado' ? 'text-white/80' : 'text-stone-400'}`}>
-                            +₱52 / 1 kg • Mabango
+                          <span>Dinorado</span>
+                          <span className={`text-[10px] font-normal ${riceType === 'dinorado' ? 'text-white/80' : 'text-stone-400'}`}>
+                            +₱52
                           </span>
                         </button>
                       </div>
@@ -1148,9 +1078,6 @@ export default function MoreTab() {
                 {t.set_title}
               </h1>
             </div>
-            <p className="text-xs text-white/80 pl-12 font-sans">
-              {t.set_sub}
-            </p>
           </section>
 
           <div className="px-4 pt-4 space-y-4">
@@ -1176,15 +1103,12 @@ export default function MoreTab() {
                       <h3 className="font-sans font-bold text-xs text-stone-900 group-hover:text-[#B8381D] transition-colors">
                         {t.set_lang_title}
                       </h3>
-                      <p className="text-[11px] text-stone-500">
-                        {t.set_lang_sub}
-                      </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-stone-700 bg-stone-100 px-2.5 py-1 rounded-md">
-                      {language === 'en' ? 'English 🇬🇧' : 'Tagalog 🇵🇭'}
+                      {language === 'en' ? 'English (EN)' : 'Tagalog (TL)'}
                     </span>
                     <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-stone-700 shrink-0" />
                   </div>
@@ -1203,16 +1127,12 @@ export default function MoreTab() {
                       <h3 className="font-sans font-bold text-xs text-stone-900 group-hover:text-[#B8381D] transition-colors">
                         {t.set_currency_title}
                       </h3>
-                      <p className="text-[11px] text-stone-500">
-                        {t.set_currency_sub}
-                      </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-stone-700 bg-stone-100 px-2.5 py-1 rounded-md flex items-center gap-1.5">
-                      <span>{SUPPORTED_CURRENCIES.find((c) => c.code === currency)?.flag || '🇵🇭'}</span>
-                      <span>{currency} ({currencySymbol})</span>
+                    <span className="text-xs font-bold text-stone-700 bg-stone-100 px-2.5 py-1 rounded-md">
+                      {currency} ({currencySymbol})
                     </span>
                     <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-stone-700 shrink-0" />
                   </div>
@@ -1228,9 +1148,6 @@ export default function MoreTab() {
                       <h3 className="font-sans font-bold text-xs text-stone-900">
                         {t.set_theme_title}
                       </h3>
-                      <p className="text-[11px] text-stone-500">
-                        {t.set_theme_sub}
-                      </p>
                     </div>
                   </div>
 
@@ -1332,9 +1249,6 @@ export default function MoreTab() {
                       <h3 className="font-sans font-bold text-xs text-stone-900">
                         {t.set_datasaver_title}
                       </h3>
-                      <p className="text-[11px] text-stone-500">
-                        {t.set_datasaver_sub}
-                      </p>
                     </div>
                   </div>
                   <button
@@ -1359,9 +1273,6 @@ export default function MoreTab() {
                       <h3 className="font-sans font-bold text-xs text-stone-900">
                         {t.set_haptics_title}
                       </h3>
-                      <p className="text-[11px] text-stone-500">
-                        {t.set_haptics_sub}
-                      </p>
                     </div>
                   </div>
                   <button
@@ -1420,7 +1331,9 @@ export default function MoreTab() {
                 className="px-4 py-4 flex items-center justify-between cursor-pointer hover:bg-stone-50 tap-spring transition-colors"
               >
                 <div className="flex items-center gap-3.5">
-                  <span className="text-2xl">🇬🇧</span>
+                  <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 font-bold text-xs flex items-center justify-center shrink-0">
+                    EN
+                  </div>
                   <div>
                     <div className="text-sm font-bold text-stone-900">{t.lang_en_title}</div>
                     <div className="text-xs text-stone-500">{t.lang_en_sub}</div>
@@ -1439,7 +1352,9 @@ export default function MoreTab() {
                 className="px-4 py-4 flex items-center justify-between cursor-pointer hover:bg-stone-50 tap-spring transition-colors"
               >
                 <div className="flex items-center gap-3.5">
-                  <span className="text-2xl">🇵🇭</span>
+                  <div className="w-9 h-9 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 font-bold text-xs flex items-center justify-center shrink-0">
+                    TL
+                  </div>
                   <div>
                     <div className="text-sm font-bold text-stone-900">{t.lang_tl_title}</div>
                     <div className="text-xs text-stone-500">{t.lang_tl_sub}</div>
@@ -1501,7 +1416,9 @@ export default function MoreTab() {
                     className="px-4 py-3.5 flex items-center justify-between cursor-pointer hover:bg-stone-50 tap-spring transition-colors"
                   >
                     <div className="flex items-center gap-3.5">
-                      <span className="text-2xl">{curr.flag}</span>
+                      <div className="w-9 h-9 rounded-xl bg-stone-100 border border-stone-200 text-stone-700 font-bold text-xs flex items-center justify-center shrink-0">
+                        {curr.symbol}
+                      </div>
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-bold text-stone-900">
@@ -1576,19 +1493,9 @@ export default function MoreTab() {
                   {t.house_name_label}
                 </label>
                 <div className="flex items-center gap-2">
-                  <select
-                    value={newMemberAvatar}
-                    onChange={(e) => setNewMemberAvatar(e.target.value)}
-                    className="w-12 h-11 rounded-xl bg-white border border-stone-200 text-lg flex items-center justify-center text-center shadow-sm"
-                  >
-                    <option value="🧒">🧒</option>
-                    <option value="👧">👧</option>
-                    <option value="👨‍💼">👨‍💼</option>
-                    <option value="👩‍💼">👩‍💼</option>
-                    <option value="👴">👴</option>
-                    <option value="👵">👵</option>
-                    <option value="👶">👶</option>
-                  </select>
+                  <div className="w-11 h-11 rounded-xl bg-stone-100 border border-stone-200 text-stone-500 flex items-center justify-center shrink-0 shadow-xs">
+                    <User className="w-5 h-5 text-stone-600" />
+                  </div>
                   <input
                     type="text"
                     value={newMemberName}

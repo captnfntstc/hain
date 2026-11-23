@@ -24,7 +24,8 @@ import {
   Carrot,
   Soup,
   Coins,
-  Flame
+  Flame,
+  ArrowRight
 } from 'lucide-react';
 
 export default function HomeTab() {
@@ -100,10 +101,10 @@ export default function HomeTab() {
 
   // ALWAYS KEEP SALUTATIONS IN TAGALOG (As requested by the user)
   const tagalogSalutation = {
-    morning: 'Magandang Umaga, Graciepherlyn! ☀️',
-    lunch: 'Magandang Tanghali, Graciepherlyn! ☀️',
-    dinner: 'Magandang Gabi, Graciepherlyn! 🌙',
-    midnight: 'Gabi na, Graciepherlyn! Baon prep? 🍱',
+    morning: 'Magandang Umaga, Graciepherlyn!',
+    lunch: 'Magandang Tanghali, Graciepherlyn!',
+    dinner: 'Magandang Gabi, Graciepherlyn!',
+    midnight: 'Gabi na, Graciepherlyn! Baon prep?',
   }[timeOfDay];
 
   useEffect(() => {
@@ -569,8 +570,8 @@ export default function HomeTab() {
         {/* Empty State */}
         {filteredRecipes.length === 0 && (
           <div className="bg-white rounded-3xl p-8 text-center space-y-3 border border-stone-200 shadow-sm">
-            <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 mx-auto flex items-center justify-center text-xl">
-              🍲
+            <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 mx-auto flex items-center justify-center">
+              <Soup className="w-6 h-6" />
             </div>
             <h3 className="font-sans font-bold text-base text-stone-900">
               {t.home_no_results}
@@ -649,7 +650,7 @@ export default function HomeTab() {
                   className="font-bold text-[#B8381D] hover:underline underline cursor-pointer ml-1 inline-flex items-center gap-0.5"
                 >
                   <span>{language === 'tl' ? 'palitan ito sa Settings' : 'change it in Settings'}</span>
-                  <span>➔</span>
+                  <ArrowRight className="w-3.5 h-3.5 inline ml-0.5" />
                 </button>
               </div>
             </div>

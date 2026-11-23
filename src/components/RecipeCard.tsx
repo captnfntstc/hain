@@ -47,7 +47,7 @@ export default function RecipeCard({ recipe }: { recipe: Recipe }) {
             {recipe.servings} pax
           </span>
           <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-            {isWithinCap ? 'Pasok ✓' : `Over P${budgetCap}`}
+            {isWithinCap ? 'Pasok' : `Over P${budgetCap}`}
           </span>
         </div>
       </div>
