@@ -24,6 +24,7 @@ import CategoryDishesPage from '../components/CategoryDishesPage';
 import DeveloperOptionsModal from '../components/DeveloperOptionsModal';
 import RegionLocationModal from '../components/RegionLocationModal';
 import TrafficAlertPromptModal from '../components/TrafficAlertPromptModal';
+import InteractiveStoreMapModal from '../components/InteractiveStoreMapModal';
 
 function MainApp() {
   const { 
@@ -72,6 +73,7 @@ function MainApp() {
       <DeveloperOptionsModal />
       <RegionLocationModal />
       <TrafficAlertPromptModal />
+      <InteractiveStoreMapModal />
     </div>
   );
 }

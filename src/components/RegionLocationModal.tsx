@@ -13,7 +13,8 @@ import {
   Check, 
   AlertTriangle,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Compass
 } from 'lucide-react';
 import { 
   REGION_LOCATIONS, 
@@ -26,6 +27,7 @@ export default function RegionLocationModal() {
   const {
     isRegionModalOpen,
     setIsRegionModalOpen,
+    setIsStoreMapOpen,
     userRegionId,
     setUserRegionId,
     preferredWetMarketId,
@@ -129,6 +131,25 @@ export default function RegionLocationModal() {
               ))}
             </select>
           </div>
+
+          {/* Interactive Map Quick Launcher Banner */}
+          <button
+            type="button"
+            onClick={() => {
+              setIsRegionModalOpen(false);
+              setIsStoreMapOpen(true);
+            }}
+            className="w-full p-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold text-xs sm:text-sm shadow-md flex items-center justify-between tap-spring hover:opacity-95 active:scale-98 transition-all"
+          >
+            <div className="flex items-center gap-2.5">
+              <Compass className="w-5 h-5 text-white shrink-0" />
+              <div className="text-left">
+                <div className="leading-tight">{isTagalog ? 'Buksan ang Interactive Map Picker' : 'Open Interactive Store Map'}</div>
+                <div className="text-[10px] text-white/80 font-normal">{isTagalog ? 'May predefined radius at pinpoint ng S&R, Balintawak' : 'Radar radius, pinpoints & S&R scroll picker'}</div>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 shrink-0" />
+          </button>
 
           {/* SECTION 2: Mode of Transportation */}
           <div className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-xs space-y-3">

@@ -19,6 +19,7 @@ import {
   RegionLocation,
   NEARBY_WET_MARKETS,
   NEARBY_SUPERMARKETS,
+  ALL_MAP_STORES,
   REGION_LOCATIONS
 } from '../types/hain';
 import { MOCK_RECIPES, PANTRY_STAPLES_LIST } from '../data/mockData';
@@ -137,6 +138,10 @@ interface HainContextType {
   } | null>>;
   confirmTrafficMarket: () => void;
   useAlternativeMarket: () => void;
+  isStoreMapOpen: boolean;
+  setIsStoreMapOpen: (open: boolean) => void;
+  selectedMapStoreId: string;
+  setSelectedMapStoreId: (id: string) => void;
 
   // Dedicated Actual Search View
   isSearchOpen: boolean;
@@ -281,6 +286,10 @@ export function HainProvider({ children }: { children: React.ReactNode }) {
   const [preferredWetMarketId, setPreferredWetMarketId] = useState<string>('munoz');
   const [preferredSupermarketId, setPreferredSupermarketId] = useState<string>('puregold-munoz');
   const [transportMode, setTransportMode] = useState<TransportMode>('walk');
+
+  // Interactive Store Map Modal State
+  const [isStoreMapOpen, setIsStoreMapOpen] = useState<boolean>(false);
+  const [selectedMapStoreId, setSelectedMapStoreId] = useState<string>('munoz');
 
   const activeWetMarket = useMemo(() => {
     return NEARBY_WET_MARKETS.find((m) => m.id === preferredWetMarketId) || NEARBY_WET_MARKETS[0];
@@ -764,6 +773,10 @@ export function HainProvider({ children }: { children: React.ReactNode }) {
         setTrafficPrompt,
         confirmTrafficMarket,
         useAlternativeMarket,
+        isStoreMapOpen,
+        setIsStoreMapOpen,
+        selectedMapStoreId,
+        setSelectedMapStoreId,
         isSearchOpen,
         setIsSearchOpen,
         recentSearches,

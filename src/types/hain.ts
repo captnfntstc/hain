@@ -215,6 +215,9 @@ export interface MarketVenue {
   wholesaleRate: boolean;
   commonAlternativeId?: string;
   alternativeReason?: string;
+  mapX: number; // SVG map coordinate relative to center (0 to 1000)
+  mapY: number;
+  radiusTier: 500 | 1500 | 3000 | 5000; // minimum radius in meters to reveal
 }
 
 export interface RegionLocation {
@@ -247,6 +250,9 @@ export const NEARBY_WET_MARKETS: MarketVenue[] = [
     address: 'Roosevelt Ave cor EDSA, Quezon City',
     badge: 'DA Bantay Presyo Partner',
     wholesaleRate: false,
+    mapX: 520,
+    mapY: 460,
+    radiusTier: 500,
   },
   {
     id: 'balintawak',
@@ -268,6 +274,9 @@ export const NEARBY_WET_MARKETS: MarketVenue[] = [
     wholesaleRate: true,
     commonAlternativeId: 'munoz',
     alternativeReason: 'Muñoz Public Wet Market is only 450m away (6 mins walk, zero traffic delay) with DA Bantay Presyo SRP rates.',
+    mapX: 250,
+    mapY: 280,
+    radiusTier: 3000,
   },
   {
     id: 'frisco',
@@ -289,6 +298,9 @@ export const NEARBY_WET_MARKETS: MarketVenue[] = [
     wholesaleRate: false,
     commonAlternativeId: 'munoz',
     alternativeReason: 'Muñoz Public Wet Market is nearer (450m vs 1.4km) with zero transfer.',
+    mapX: 380,
+    mapY: 660,
+    radiusTier: 1500,
   },
 ];
 
@@ -311,6 +323,31 @@ export const NEARBY_SUPERMARKETS: MarketVenue[] = [
     address: 'EDSA near Congressional Ave, Quezon City',
     badge: 'Best for Sachets, Condiments & Rice',
     wholesaleRate: false,
+    mapX: 470,
+    mapY: 480,
+    radiusTier: 500,
+  },
+  {
+    id: 'dali-shorthorn',
+    name: 'Dali Everyday Grocery Short Horn',
+    shortName: 'Dali Short Horn',
+    type: 'supermarket',
+    distanceKm: 0.4,
+    distanceMeters: 400,
+    walkMinutes: 5,
+    commuteMinutes: 4,
+    driveMinutes: 3,
+    walkability: 'High',
+    walkabilityDesc: '5 mins walk through neighborhood street',
+    trafficLevel: 'Light',
+    trafficDesc: 'Quiet residential access',
+    commuteFare: 13,
+    address: 'Short Horn St, Project 8, Quezon City',
+    badge: 'Hard-Discount Eggs, Oil & Canned Goods',
+    wholesaleRate: false,
+    mapX: 430,
+    mapY: 530,
+    radiusTier: 500,
   },
   {
     id: 'waltermart-munoz',
@@ -330,6 +367,53 @@ export const NEARBY_SUPERMARKETS: MarketVenue[] = [
     address: 'EDSA cor Roosevelt Ave, Quezon City',
     badge: 'Air-conditioned Quick Grocery',
     wholesaleRate: false,
+    mapX: 540,
+    mapY: 510,
+    radiusTier: 500,
+  },
+  {
+    id: 'snr-congressional',
+    name: 'S&R Membership Shopping Congressional',
+    shortName: 'S&R Congressional',
+    type: 'supermarket',
+    distanceKm: 1.3,
+    distanceMeters: 1300,
+    walkMinutes: 17,
+    commuteMinutes: 10,
+    driveMinutes: 6,
+    walkability: 'Moderate',
+    walkabilityDesc: '17 mins walk along Congressional Ave',
+    trafficLevel: 'Moderate',
+    trafficDesc: 'Standard Congressional Ave flow',
+    commuteFare: 13,
+    address: 'Congressional Ave near EDSA, Project 8, QC',
+    badge: 'Warehouse Club • Bulk Meats & Fresh Deli',
+    wholesaleRate: true,
+    mapX: 680,
+    mapY: 340,
+    radiusTier: 1500,
+  },
+  {
+    id: 'sm-north',
+    name: 'SM City North EDSA Hypermarket',
+    shortName: 'SM North EDSA',
+    type: 'supermarket',
+    distanceKm: 1.5,
+    distanceMeters: 1500,
+    walkMinutes: 20,
+    commuteMinutes: 15,
+    driveMinutes: 8,
+    walkability: 'Moderate',
+    walkabilityDesc: '20 mins walk via MRT pedestrian walkway',
+    trafficLevel: 'Moderate',
+    trafficDesc: 'EDSA-North Ave flow',
+    commuteFare: 13,
+    address: 'EDSA cor North Ave, Quezon City',
+    badge: 'Large Hypermarket & Complete Pantry Items',
+    wholesaleRate: false,
+    mapX: 740,
+    mapY: 530,
+    radiusTier: 1500,
   },
   {
     id: 'sm-cloverleaf',
@@ -351,8 +435,40 @@ export const NEARBY_SUPERMARKETS: MarketVenue[] = [
     wholesaleRate: false,
     commonAlternativeId: 'puregold-munoz',
     alternativeReason: 'Puregold Muñoz is only 350m away (5 mins walk, zero traffic delay).',
+    mapX: 210,
+    mapY: 260,
+    radiusTier: 3000,
+  },
+  {
+    id: 'landers-balintawak',
+    name: 'Landers Superstore Balintawak',
+    shortName: 'Landers Balintawak',
+    type: 'supermarket',
+    distanceKm: 2.2,
+    distanceMeters: 2200,
+    walkMinutes: 32,
+    commuteMinutes: 25,
+    driveMinutes: 15,
+    walkability: 'Low',
+    walkabilityDesc: '32 mins walk along EDSA highway',
+    trafficLevel: 'Heavy',
+    trafficDesc: 'Heavy Balintawak interchange traffic',
+    commuteFare: 15,
+    address: '1240 EDSA, Balintawak, Quezon City',
+    badge: 'Superstore • Imported Cuts & Fresh Deli',
+    wholesaleRate: true,
+    commonAlternativeId: 'puregold-munoz',
+    alternativeReason: 'Puregold Muñoz or S&R Congressional are nearer with lighter traffic.',
+    mapX: 180,
+    mapY: 310,
+    radiusTier: 3000,
   },
 ];
+
+export const ALL_MAP_STORES: MarketVenue[] = [
+  ...NEARBY_WET_MARKETS,
+  ...NEARBY_SUPERMARKETS,
+].sort((a, b) => a.distanceMeters - b.distanceMeters);
 
 export const REGION_LOCATIONS: RegionLocation[] = [
   {

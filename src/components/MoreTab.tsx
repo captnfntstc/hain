@@ -32,7 +32,8 @@ import {
   Footprints,
   Bus,
   Car,
-  ShoppingBag
+  ShoppingBag,
+  Compass
 } from 'lucide-react';
 import { HouseholdMember, SUPPORTED_CURRENCIES, NEARBY_WET_MARKETS, NEARBY_SUPERMARKETS, TransportMode } from '../types/hain';
 import { AllergenIcon, DietaryIcon } from './FilterIcons';
@@ -66,6 +67,10 @@ export default function MoreTab() {
     setTransportMode,
     currentRegion,
     setIsRegionModalOpen,
+    activeWetMarket,
+    activeSupermarket,
+    isStoreMapOpen,
+    setIsStoreMapOpen,
     t,
     language,
     setLanguage,
@@ -763,6 +768,56 @@ export default function MoreTab() {
                   {language === 'tl' ? 'Palitan' : 'Change'}
                 </button>
               </div>
+            </div>
+
+            {/* Interactive Store Map Launcher Card (Predefined radius & Pinpoint Map) */}
+            <div 
+              onClick={() => setIsStoreMapOpen(true)}
+              className="bg-gradient-to-br from-[#FFF8ED] to-[#FEF3C7] rounded-2xl p-4 border border-amber-300 shadow-sm cursor-pointer tap-spring transition-all hover:shadow-md space-y-3"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-xs">
+                    <Compass className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-amber-800 tracking-wider">
+                      {language === 'tl' ? 'Interactive Store Map' : 'Interactive Store Map'}
+                    </span>
+                    <h3 className="text-xs sm:text-sm font-bold text-stone-900 leading-tight">
+                      {language === 'tl' ? 'Mapa ng mga Palengke at Grocery' : 'Visual Radar & Store Pinpoints'}
+                    </h3>
+                  </div>
+                </div>
+
+                <span className="text-[10px] font-bold text-white bg-[#B8381D] px-2.5 py-1 rounded-full shadow-xs shrink-0">
+                  {language === 'tl' ? 'Buksan ang Mapa' : 'Open Map'}
+                </span>
+              </div>
+
+              {/* Nearest active stores preview */}
+              <div className="p-2.5 rounded-xl bg-white/90 border border-amber-200/70 text-xs space-y-1.5">
+                <div className="flex items-center justify-between text-stone-700">
+                  <span className="flex items-center gap-1.5 font-semibold">
+                    <span className="w-2 h-2 rounded-full bg-[#B8381D]" />
+                    {language === 'tl' ? 'Pinakamalapit na Palengke:' : 'Nearest Palengke:'}
+                  </span>
+                  <span className="font-bold text-stone-900">{activeWetMarket.shortName} ({activeWetMarket.distanceKm} km)</span>
+                </div>
+                <div className="flex items-center justify-between text-stone-700">
+                  <span className="flex items-center gap-1.5 font-semibold">
+                    <span className="w-2 h-2 rounded-full bg-emerald-600" />
+                    {language === 'tl' ? 'Pinakamalapit na Grocery:' : 'Nearest Supermarket:'}
+                  </span>
+                  <span className="font-bold text-stone-900">{activeSupermarket.shortName} ({activeSupermarket.distanceKm} km)</span>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-amber-950 font-medium">
+                {language === 'tl'
+                  ? 'I-pinch ang mapa para mag-zoom out at makita ang S&R, Balintawak Bagsakan, at iba pang bilihan.'
+                  : 'Pinch the map to zoom out and discover S&R, Balintawak Bagsakan, and more.'}
+              </p>
             </div>
 
             {/* Mode of Transportation Selector */}
