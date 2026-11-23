@@ -51,7 +51,6 @@ export default function HomeTab() {
     isCalendarPageOpen,
     setIsCalendarPageOpen,
     currentRegion,
-    setIsRegionModalOpen,
     userAddress,
     setMoreTabSubpage,
     setActiveTab,
@@ -205,7 +204,7 @@ export default function HomeTab() {
             : 'pb-6 rounded-b-[36px] sm:rounded-b-[40px]'
         }`}
       >
-        {/* Brand bar with calendar button - smoothly collapses on scroll to minimize magnetized height */}
+        {/* Brand bar - smoothly collapses on scroll to minimize magnetized height */}
         <div className={`flex items-center justify-between font-medium transition-all duration-200 ease-out overflow-hidden ${
           isScrolled ? 'max-h-0 opacity-0 mb-0' : 'max-h-12 opacity-100 mb-3.5'
         }`}>
@@ -215,26 +214,6 @@ export default function HomeTab() {
           >
             H A I N
           </span>
-          
-          {/* Location Name Button with Pin ('54 Dangay St' as requested) */}
-          <button
-            type="button"
-            onClick={() => setIsRegionModalOpen(true)}
-            aria-label={language === 'tl' ? 'I-set ang eksaktong lokasyon' : 'Set precise location'}
-            title={userAddress}
-            style={{ 
-              borderColor: colorTheme.headerIconBorder,
-              color: colorTheme.headerText,
-              backgroundColor: colorTheme.headerText === '#FFFFFF' ? 'rgba(255, 255, 255, 0.18)' : 'rgba(0, 0, 0, 0.08)'
-            }}
-            className="h-8 sm:h-9 px-3 rounded-full flex items-center gap-1.5 hover:opacity-85 active:scale-95 transition-all border backdrop-blur-md shadow-xs tap-spring shrink-0 max-w-[190px] sm:max-w-[220px]"
-          >
-            <MapPin className="w-3.5 h-3.5 shrink-0" />
-            <span className="text-xs font-semibold truncate tracking-tight">
-              {userAddress.split(',')[0]}
-            </span>
-            <ChevronDown className="w-3 h-3 opacity-75 shrink-0" />
-          </button>
         </div>
 
         {/* HERO TITLE - Large Editorial Serif Title from Figma Mockup */}
@@ -317,17 +296,24 @@ export default function HomeTab() {
           "Showing you recipes, ingredients, and market prices near [address]... If you think there are mistakes, change it here"
           Redirects to Settings -> Palengke & Budget
         */}
-        <div className="bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/40 rounded-2xl p-3 flex items-start gap-2.5 shadow-2xs">
+        <div 
+          onClick={() => {
+            setMoreTabSubpage('palengke');
+            setActiveTab('more');
+          }}
+          className="bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/40 rounded-[22px] p-3.5 px-4 flex items-start gap-2.5 shadow-2xs cursor-pointer tap-spring hover:border-amber-300 transition-all"
+        >
           <MapPin className="w-4 h-4 text-[#B8381D] dark:text-amber-400 shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0 text-xs text-amber-950 dark:text-amber-200 leading-relaxed font-sans">
             <span>
               {language === 'tl'
-                ? <>Ipinapakita ang mga ulam, sangkap, at presyo ng bilihin malapit sa <strong>{userAddress.split(',')[0]}</strong>. Kung sa tingin mo ay may mali sa lokasyon, </>
-                : <>Showing recipes, ingredients, and palengke prices near <strong>{userAddress.split(',')[0]}</strong>. If you think there is a mistake, </>}
+                ? <>Ipinapakita ang mga ulam, sangkap, at presyo ng bilihin malapit sa <strong className="font-bold text-amber-950 dark:text-amber-100">{userAddress.split(',')[0]}</strong>. Kung sa tingin mo ay may mali sa lokasyon, </>
+                : <>Showing recipes, ingredients, and palengke prices near <strong className="font-bold text-amber-950 dark:text-amber-100">{userAddress.split(',')[0]}</strong>. If you think there is a mistake, </>}
             </span>
             <button
               type="button"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 setMoreTabSubpage('palengke');
                 setActiveTab('more');
               }}
