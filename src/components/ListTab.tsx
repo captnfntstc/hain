@@ -15,10 +15,12 @@ import {
   ArrowRight,
   Footprints,
   Bus,
-  Car
+  Car,
+  ChevronRight,
+  Sparkles
 } from 'lucide-react';
 import { Button } from 'glisse';
-import { TransportMode } from '../types/hain';
+import { TransportMode, formatStoreTravelTime } from '../types/hain';
 
 export default function ListTab() {
   const {
@@ -49,12 +51,7 @@ export default function ListTab() {
   const palengkeItems = activeRecipe.ingredients.filter((i) => i.storeType === 'palengke');
   const supermarketItems = activeRecipe.ingredients.filter((i) => i.storeType === 'supermarket');
 
-  const travelTime =
-    transportMode === 'walk'
-      ? `${activeWetMarket.walkMinutes} mins lakad`
-      : transportMode === 'commute'
-      ? `~${activeWetMarket.commuteMinutes} mins commute (₱${activeWetMarket.commuteFare})`
-      : `~${activeWetMarket.driveMinutes} mins biyahe`;
+  const travelTime = formatStoreTravelTime(activeWetMarket, transportMode);
 
   const isHighTraffic = activeWetMarket.trafficLevel === 'Heavy' && !dismissTrafficBanner;
 
@@ -129,9 +126,10 @@ export default function ListTab() {
             <button
               type="button"
               onClick={() => setIsRegionModalOpen(true)}
-              className="text-[11px] font-bold text-[#B8381D] bg-[#FDECE8] px-2.5 py-1 rounded-lg tap-spring"
+              className="p-1 text-stone-400 hover:text-stone-700 tap-spring transition-colors"
+              aria-label="Change location"
             >
-              {isTagalog ? 'Palitan' : 'Change'}
+              <ChevronRight className="w-5 h-5" />
             </button>
           </div>
 
@@ -147,11 +145,12 @@ export default function ListTab() {
           </div>
 
           {/* Quick Mode of Transportation Selector */}
-          <div className="grid grid-cols-3 gap-1.5 pt-1">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1">
             {[
-              { id: 'walk' as TransportMode, label: isTagalog ? 'Lakad' : 'Walk', icon: <Footprints className="w-3.5 h-3.5" /> },
-              { id: 'commute' as TransportMode, label: isTagalog ? 'Commute' : 'Commute', icon: <Bus className="w-3.5 h-3.5" /> },
-              { id: 'car' as TransportMode, label: isTagalog ? 'Sasakyan' : 'Car', icon: <Car className="w-3.5 h-3.5" /> },
+              { id: 'dynamic' as TransportMode, label: 'Dynamic', icon: <Sparkles className="w-3.5 h-3.5 text-amber-500" /> },
+              { id: 'walk' as TransportMode, label: isTagalog ? 'Lakad' : 'Walk', icon: <Footprints className="w-3.5 h-3.5 text-[#B8381D]" /> },
+              { id: 'commute' as TransportMode, label: isTagalog ? 'Commute' : 'Commute', icon: <Bus className="w-3.5 h-3.5 text-blue-600" /> },
+              { id: 'car' as TransportMode, label: isTagalog ? 'Sasakyan' : 'Car', icon: <Car className="w-3.5 h-3.5 text-emerald-600" /> },
             ].map((m) => {
               const active = transportMode === m.id;
               return (

@@ -20,7 +20,8 @@ import {
   REGION_LOCATIONS, 
   NEARBY_WET_MARKETS, 
   NEARBY_SUPERMARKETS, 
-  TransportMode 
+  TransportMode,
+  formatStoreTravelTime
 } from '../types/hain';
 
 export default function RegionLocationModal() {
@@ -46,22 +47,28 @@ export default function RegionLocationModal() {
 
   const transpoOptions: { id: TransportMode; label: string; icon: React.ReactNode; desc: string }[] = [
     {
+      id: 'dynamic',
+      label: isTagalog ? 'Dynamic' : 'Dynamic',
+      icon: <Sparkles className="w-4 h-4 text-amber-500" />,
+      desc: isTagalog ? 'Kusang umaakma' : 'Adapts automatically',
+    },
+    {
       id: 'walk',
       label: isTagalog ? 'Lakad Lang' : 'Walking',
-      icon: <Footprints className="w-4 h-4" />,
-      desc: isTagalog ? 'Walang trapiko, libreng lakad' : 'Zero delay, ₱0 fare',
+      icon: <Footprints className="w-4 h-4 text-[#B8381D]" />,
+      desc: isTagalog ? '0-15 mins, ₱0 fare' : '0-15 mins, ₱0 fare',
     },
     {
       id: 'commute',
       label: isTagalog ? 'Commute' : 'Commute',
-      icon: <Bus className="w-4 h-4" />,
-      desc: isTagalog ? 'Jeep, Trike, o Carousel' : 'Jeepney, Trike, or Bus',
+      icon: <Bus className="w-4 h-4 text-blue-600" />,
+      desc: isTagalog ? 'Jeep, Trike, Bus' : 'Jeep, Trike, Bus',
     },
     {
       id: 'car',
-      label: isTagalog ? 'May Sasakyan' : 'Car / Motor',
-      icon: <Car className="w-4 h-4" />,
-      desc: isTagalog ? 'Kotse o motorsiklo' : 'Personal car or motorcycle',
+      label: isTagalog ? 'Sasakyan' : 'Car / Motor',
+      icon: <Car className="w-4 h-4 text-emerald-600" />,
+      desc: isTagalog ? 'Kotse o motor' : 'Personal vehicle',
     },
   ];
 
@@ -103,33 +110,78 @@ export default function RegionLocationModal() {
         {/* Modal Scrollable Body */}
         <div className="p-5 overflow-y-auto space-y-5">
           
-          {/* SECTION 1: Region / Neighborhood Anchor */}
-          <div className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-xs space-y-3">
+          {/* SECTION 1: Precise Location Anchor & GPS Calibration */}
+          <div className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-xs space-y-3.5">
             <div className="flex items-center justify-between">
               <div>
                 <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">
-                  {isTagalog ? 'Kasalukuyang Lokasyon / Rehiyon' : 'Current Region / City'}
+                  {isTagalog ? 'Eksaktong Lokasyon / GPS Anchor' : 'Precise Location / GPS Anchor'}
                 </span>
                 <h3 className="text-sm font-bold text-stone-900 mt-0.5">
-                  {isTagalog ? 'Pumili ng Rehiyon sa Pilipinas' : 'Select Philippine Region'}
+                  {isTagalog ? 'I-set ang iyong Landmark o Kanto' : 'Calibrate Precise Landmark'}
                 </h3>
               </div>
-              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                Live GPS Pin
+              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Live Pin
               </span>
             </div>
 
-            <select
-              value={userRegionId}
-              onChange={(e) => setUserRegionId(e.target.value)}
-              className="w-full p-3 rounded-xl bg-stone-50 border border-stone-200 text-xs sm:text-sm font-semibold text-stone-800 focus:outline-none focus:border-[#B8381D] cursor-pointer"
-            >
-              {REGION_LOCATIONS.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.name} ({r.region}) {r.isDefault ? '• Testing Default' : ''}
-                </option>
-              ))}
-            </select>
+            <p className="text-[11px] text-stone-500 leading-relaxed">
+              {isTagalog 
+                ? 'Sakaling mali o malayo ang na-detect ng automated GPS, pumili ng pinakamalapit na landmark sa ibaba para eksakto ang layo ng palengke.'
+                : 'If automated GPS placed you slightly off, select your nearest neighborhood anchor below for precise distances.'}
+            </p>
+
+            {/* Quick Landmark Anchor Choices in Quezon City / Metro Manila */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {[
+                { id: 'munoz-edsa', label: 'Muñoz / FPJ Station', detail: 'Roosevelt Ave cor EDSA' },
+                { id: 'balintawak-cloverleaf', label: 'Balintawak Cloverleaf', detail: 'A. Bonifacio Ave' },
+                { id: 'project8-shorthorn', label: 'Project 8 / Short Horn', detail: 'Short Horn St, Project 8' },
+                { id: 'frisco-delmonte', label: 'San Francisco Del Monte', detail: 'Del Monte Ave cor Roosevelt' },
+                { id: 'congressional-edsa', label: 'Congressional Ave', detail: 'Near EDSA & S&R' },
+                { id: 'sm-north-complex', label: 'North Avenue District', detail: 'SM North / Trinoma vicinity' },
+              ].map((lm) => {
+                const isActive = userRegionId === 'munoz-balintawak' && lm.id === 'munoz-edsa';
+                return (
+                  <button
+                    key={lm.id}
+                    type="button"
+                    onClick={() => setUserRegionId('munoz-balintawak')}
+                    className={`p-2.5 rounded-xl border text-left transition-all tap-spring flex items-start gap-2 ${
+                      isActive
+                        ? 'bg-amber-50/80 border-[#B8381D] shadow-xs'
+                        : 'bg-stone-50 border-stone-200 hover:bg-stone-100/60'
+                    }`}
+                  >
+                    <MapPin className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${isActive ? 'text-[#B8381D]' : 'text-stone-400'}`} />
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold text-stone-900 truncate">{lm.label}</div>
+                      <div className="text-[10px] text-stone-500 truncate">{lm.detail}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Philippine Region Dropdown */}
+            <div className="pt-1 border-t border-stone-100">
+              <label className="text-[10px] uppercase font-bold text-stone-400 block mb-1">
+                {isTagalog ? 'Pangkalahatang Rehiyon' : 'General Region / Province'}
+              </label>
+              <select
+                value={userRegionId}
+                onChange={(e) => setUserRegionId(e.target.value)}
+                className="w-full p-2.5 rounded-xl bg-stone-50 border border-stone-200 text-xs font-semibold text-stone-800 focus:outline-none focus:border-[#B8381D] cursor-pointer"
+              >
+                {REGION_LOCATIONS.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.name} ({r.region}) {r.isDefault ? '• Testing Default' : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Interactive Map Quick Launcher Banner */}
@@ -167,7 +219,7 @@ export default function RegionLocationModal() {
               </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {transpoOptions.map((opt) => {
                 const isSelected = transportMode === opt.id;
                 return (
@@ -213,14 +265,7 @@ export default function RegionLocationModal() {
             <div className="space-y-2">
               {NEARBY_WET_MARKETS.map((market) => {
                 const isSelected = preferredWetMarketId === market.id;
-                
-                // Dynamic travel time based on transport mode
-                const travelTime = 
-                  transportMode === 'walk'
-                    ? `${market.walkMinutes} mins lakad`
-                    : transportMode === 'commute'
-                    ? `~${market.commuteMinutes} mins commute (₱${market.commuteFare})`
-                    : `~${market.driveMinutes} mins biyahe`;
+                const travelTime = formatStoreTravelTime(market, transportMode);
 
                 return (
                   <div
@@ -301,13 +346,7 @@ export default function RegionLocationModal() {
             <div className="space-y-2">
               {NEARBY_SUPERMARKETS.map((supermarket) => {
                 const isSelected = preferredSupermarketId === supermarket.id;
-
-                const travelTime = 
-                  transportMode === 'walk'
-                    ? `${supermarket.walkMinutes} mins lakad`
-                    : transportMode === 'commute'
-                    ? `~${supermarket.commuteMinutes} mins commute`
-                    : `~${supermarket.driveMinutes} mins biyahe`;
+                const travelTime = formatStoreTravelTime(supermarket, transportMode);
 
                 return (
                   <div

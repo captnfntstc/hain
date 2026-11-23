@@ -24,7 +24,8 @@ import {
   NEARBY_WET_MARKETS, 
   NEARBY_SUPERMARKETS, 
   MarketVenue, 
-  TransportMode 
+  TransportMode,
+  formatStoreTravelTime
 } from '../types/hain';
 
 const ITEM_HEIGHT = 48; // Exact row height for Apple UIPickerView style
@@ -227,11 +228,9 @@ export default function InteractiveStoreMapModal() {
 
   if (!isStoreMapOpen) return null;
 
-  // Travel time display helper
+  // Travel time display helper using global formatStoreTravelTime
   const getTravelTime = (store: MarketVenue) => {
-    if (transportMode === 'walk') return `${store.walkMinutes} mins lakad`;
-    if (transportMode === 'commute') return `~${store.commuteMinutes} mins commute (₱${store.commuteFare})`;
-    return `~${store.driveMinutes} mins biyahe`;
+    return formatStoreTravelTime(store, transportMode);
   };
 
   // Compute SVG viewBox based on mapCenter and zoomLevel
@@ -269,12 +268,17 @@ export default function InteractiveStoreMapModal() {
           </button>
         </div>
 
-        {/* Radius Filter Pills & Mode of Transport */}
-        <div className="flex items-center justify-between gap-2 overflow-x-auto no-scrollbar pt-1">
+        {/* Radius Filter Pills */}
+        <div className="flex items-center justify-start gap-2 overflow-x-auto no-scrollbar pt-1">
           <div className="flex items-center gap-1.5 bg-stone-900/70 backdrop-blur-md p-1 rounded-full border border-white/15">
             {[500, 1500, 3000].map((rad) => {
               const isSelected = selectedRadius === rad;
-              const label = rad === 500 ? '500m (Walk)' : rad === 1500 ? '1.5 km (S&R/SM)' : '3.0 km (Bagsakan)';
+              const label =
+                rad === 500
+                  ? (storeMapTargetType === 'wetmarket' ? '500m (Muñoz)' : '500m (Puregold)')
+                  : rad === 1500
+                  ? (storeMapTargetType === 'wetmarket' ? '1.5 km (Frisco)' : '1.5 km (S&R/SM)')
+                  : (storeMapTargetType === 'wetmarket' ? '3.0 km (Balintawak)' : '3.0 km (Landers)');
               return (
                 <button
                   key={rad}
@@ -287,30 +291,6 @@ export default function InteractiveStoreMapModal() {
                   }`}
                 >
                   {label}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Mode of Transpo Selector */}
-          <div className="flex items-center gap-1 bg-stone-900/70 backdrop-blur-md p-1 rounded-full border border-white/15 shrink-0">
-            {[
-              { id: 'walk' as TransportMode, icon: <Footprints className="w-3.5 h-3.5" />, title: 'Lakad' },
-              { id: 'commute' as TransportMode, icon: <Bus className="w-3.5 h-3.5" />, title: 'Commute' },
-              { id: 'car' as TransportMode, icon: <Car className="w-3.5 h-3.5" />, title: 'Kotse' },
-            ].map((m) => {
-              const active = transportMode === m.id;
-              return (
-                <button
-                  key={m.id}
-                  type="button"
-                  onClick={() => setTransportMode(m.id)}
-                  title={m.title}
-                  className={`w-7 h-7 rounded-full flex items-center justify-center transition-all tap-spring ${
-                    active ? 'bg-[#B8381D] text-white shadow-xs' : 'text-stone-400 hover:text-white'
-                  }`}
-                >
-                  {m.icon}
                 </button>
               );
             })}
@@ -495,10 +475,9 @@ export default function InteractiveStoreMapModal() {
             </text>
           </g>
 
-          {/* STORE PINPOINTS ON MAP */}
-          {ALL_MAP_STORES.map((store) => {
+          {/* STORE PINPOINTS ON MAP (Strictly filtered: only wetmarkets for wetmarket mode, only supermarkets for supermarket mode) */}
+          {currentStores.map((store) => {
             const isSelected = activeStoreId === store.id;
-            const isTargetCategory = store.type === storeMapTargetType;
             const isWet = store.type === 'wetmarket';
             const isClub = store.id === 'snr-congressional' || store.id === 'landers-balintawak';
 
@@ -511,7 +490,6 @@ export default function InteractiveStoreMapModal() {
                 transform={`translate(${store.mapX}, ${store.mapY})`}
                 onClick={() => handlePinClick(store)}
                 className="cursor-pointer transition-transform duration-200"
-                opacity={isTargetCategory ? 1 : 0.45}
               >
                 {/* Active selection glow ring */}
                 {isSelected && (
@@ -524,7 +502,7 @@ export default function InteractiveStoreMapModal() {
                 {/* Pin Body Marker */}
                 <path
                   d="M 0 0 C -9 -14 -12 -22 -12 -30 A 12 12 0 1 1 12 -30 C 12 -22 9 -14 0 0 Z"
-                  fill={isSelected ? pinColor : isTargetCategory ? pinColor : '#78716C'}
+                  fill={pinColor}
                   stroke="#FFFFFF"
                   strokeWidth="2"
                   filter="drop-shadow(0px 3px 6px rgba(0,0,0,0.3))"
@@ -631,40 +609,18 @@ export default function InteractiveStoreMapModal() {
       {/* BOTTOM DRAWER / APPLE VERTICAL WHEEL SCROLL PICKER */}
       <div className="relative z-20 bg-white rounded-t-[32px] shadow-[0_-12px_36px_rgba(0,0,0,0.18)] border-t border-stone-200/80 pt-3 pb-safe-sheet flex flex-col space-y-3 px-5">
         
-        {/* Grab Handle & Category Switcher Pills */}
+        {/* Drawer Header (Clean Title without switcher pills as requested) */}
         <div className="flex items-center justify-between pt-1">
-          <div className="flex items-center gap-1.5 bg-stone-100 p-1 rounded-full text-xs font-bold">
-            <button
-              type="button"
-              onClick={() => {
-                setStoreMapTargetType('wetmarket');
-              }}
-              className={`px-3.5 py-1.5 rounded-full transition-all tap-spring flex items-center gap-1.5 ${
-                storeMapTargetType === 'wetmarket'
-                  ? 'bg-[#B8381D] text-white shadow-xs'
-                  : 'text-stone-500 hover:text-stone-800'
-              }`}
-            >
-              <Store className="w-3.5 h-3.5" />
-              <span>{isTagalog ? 'Palengke' : 'Wet Market'}</span>
-              <span className="text-[10px] opacity-80">({NEARBY_WET_MARKETS.length})</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setStoreMapTargetType('supermarket');
-              }}
-              className={`px-3.5 py-1.5 rounded-full transition-all tap-spring flex items-center gap-1.5 ${
-                storeMapTargetType === 'supermarket'
-                  ? 'bg-emerald-700 text-white shadow-xs'
-                  : 'text-stone-500 hover:text-stone-800'
-              }`}
-            >
-              <ShoppingBag className="w-3.5 h-3.5" />
-              <span>{isTagalog ? 'Supermarket' : 'Supermarket'}</span>
-              <span className="text-[10px] opacity-80">({NEARBY_SUPERMARKETS.length})</span>
-            </button>
+          <div className="flex items-center gap-2">
+            <span className={`w-2.5 h-2.5 rounded-full ${storeMapTargetType === 'wetmarket' ? 'bg-[#B8381D]' : 'bg-emerald-600'}`} />
+            <h3 className="font-sans font-bold text-xs sm:text-sm text-stone-900">
+              {storeMapTargetType === 'wetmarket'
+                ? (isTagalog ? 'Mga Palengke sa Paligid' : 'Nearby Wet Markets')
+                : (isTagalog ? 'Mga Supermarket at Grocery' : 'Nearby Supermarkets')}
+            </h3>
+            <span className="text-[11px] font-bold text-stone-400">
+              ({currentStores.length})
+            </span>
           </div>
 
           <span className="text-[11px] font-semibold text-stone-400">

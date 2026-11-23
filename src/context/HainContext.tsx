@@ -288,7 +288,7 @@ export function HainProvider({ children }: { children: React.ReactNode }) {
   // Preferred Markets & Transport Mode
   const [preferredWetMarketId, setPreferredWetMarketId] = useState<string>('munoz');
   const [preferredSupermarketId, setPreferredSupermarketId] = useState<string>('puregold-munoz');
-  const [transportMode, setTransportMode] = useState<TransportMode>('walk');
+  const [transportMode, setTransportMode] = useState<TransportMode>('dynamic');
 
   // Interactive Store Map Modal State
   const [isStoreMapOpen, setIsStoreMapOpen] = useState<boolean>(false);

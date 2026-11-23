@@ -193,7 +193,24 @@ export interface PantryStapleItem {
 
 export type PrimaryColorThemeId = 'warm-red' | 'sage-green' | 'warm-yellow' | 'off-white';
 
-export type TransportMode = 'walk' | 'commute' | 'car';
+export type TransportMode = 'dynamic' | 'walk' | 'commute' | 'car';
+
+export function formatStoreTravelTime(store: MarketVenue, mode: TransportMode): string {
+  if (mode === 'walk') {
+    return `${store.walkMinutes} mins lakad`;
+  }
+  if (mode === 'commute') {
+    return `~${store.commuteMinutes} mins commute (₱${store.commuteFare})`;
+  }
+  if (mode === 'car') {
+    return `~${store.driveMinutes} mins biyahe`;
+  }
+  // Dynamic mode: choose most practical mode based on distance
+  if (store.distanceKm <= 0.6) {
+    return `${store.walkMinutes} mins lakad (Walking distance)`;
+  }
+  return `~${store.commuteMinutes} mins commute / ${store.driveMinutes} mins biyahe`;
+}
 
 export interface MarketVenue {
   id: string;

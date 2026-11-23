@@ -213,24 +213,20 @@ export default function HomeTab() {
             H A I N
           </span>
           
-          {/* Region Picker Button on top right (Replacing the previous calendar position) */}
+          {/* Precise Location Anchor Pin Button (Icon only as requested) */}
           <button
             type="button"
             onClick={() => setIsRegionModalOpen(true)}
-            aria-label={language === 'tl' ? 'Pumili ng Rehiyon at Palengke' : 'Select Region & Market'}
+            aria-label={language === 'tl' ? 'I-set ang eksaktong lokasyon' : 'Set precise location'}
             title={currentRegion.name}
             style={{ 
               borderColor: colorTheme.headerIconBorder,
               color: colorTheme.headerText,
               backgroundColor: colorTheme.headerText === '#FFFFFF' ? 'rgba(255, 255, 255, 0.18)' : 'rgba(0, 0, 0, 0.08)'
             }}
-            className="h-9 px-3 rounded-full flex items-center gap-1.5 hover:opacity-85 active:scale-95 transition-all border backdrop-blur-md shadow-xs tap-spring shrink-0"
+            className="w-9 h-9 rounded-full flex items-center justify-center hover:opacity-85 active:scale-95 transition-all border backdrop-blur-md shadow-xs tap-spring shrink-0"
           >
-            <MapPin className="w-3.5 h-3.5 shrink-0" />
-            <span className="text-[11px] font-bold font-sans tracking-tight">
-              {currentRegion.shortName}
-            </span>
-            <ChevronDown className="w-3 h-3 opacity-70 shrink-0" />
+            <MapPin className="w-4 h-4 shrink-0" />
           </button>
         </div>
 

@@ -35,11 +35,11 @@ import {
   ShoppingBag,
   Compass
 } from 'lucide-react';
-import { HouseholdMember, SUPPORTED_CURRENCIES, NEARBY_WET_MARKETS, NEARBY_SUPERMARKETS, TransportMode } from '../types/hain';
+import { HouseholdMember, SUPPORTED_CURRENCIES, NEARBY_WET_MARKETS, NEARBY_SUPERMARKETS, TransportMode, formatStoreTravelTime } from '../types/hain';
 import { AllergenIcon, DietaryIcon } from './FilterIcons';
 import { Button } from 'glisse';
 
-type MoreSubpage = 'menu' | 'profile' | 'household' | 'palengke' | 'settings' | 'language' | 'currency';
+type MoreSubpage = 'menu' | 'profile' | 'household' | 'palengke' | 'settings' | 'language' | 'currency' | 'transport';
 
 export default function MoreTab() {
   const {
@@ -715,7 +715,13 @@ export default function MoreTab() {
 
           <div className="px-4 pt-4 space-y-4">
             {/* Daily Budget & Pax Settings */}
-            <div className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-3">
+            <div 
+              onClick={() => {
+                setBudgetModalStep(1);
+                setIsBudgetModalOpen(true);
+              }}
+              className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-3 cursor-pointer tap-spring hover:border-stone-300 transition-all"
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-sans font-bold text-xs text-stone-900">
@@ -725,16 +731,7 @@ export default function MoreTab() {
                     {t.market_budget_sub}
                   </p>
                 </div>
-                <Button
-                  variant="glass"
-                  onClick={() => {
-                    setBudgetModalStep(1);
-                    setIsBudgetModalOpen(true);
-                  }}
-                  className="!text-xs !font-bold !text-[#B8381D] !bg-[#FDECE8] !px-3 !py-1 !rounded-md"
-                >
-                  <span>{t.market_change_btn}</span>
-                </Button>
+                <ChevronRight className="w-5 h-5 text-stone-400 shrink-0" />
               </div>
 
               <div className="p-3 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-between">
@@ -750,7 +747,10 @@ export default function MoreTab() {
             </div>
 
             {/* GPS Region & Neighborhood Anchor Card */}
-            <div className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-2">
+            <div 
+              onClick={() => setIsRegionModalOpen(true)}
+              className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-2 cursor-pointer tap-spring hover:border-stone-300 transition-all"
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-[10px] uppercase font-bold text-stone-400">
@@ -761,64 +761,39 @@ export default function MoreTab() {
                     <span>{currentRegion.name}</span>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setIsRegionModalOpen(true)}
-                  className="text-xs font-bold text-[#B8381D] bg-[#FDECE8] px-3 py-1.5 rounded-lg tap-spring hover:bg-[#B8381D]/15 transition-colors"
-                >
-                  {language === 'tl' ? 'Palitan' : 'Change'}
-                </button>
+                <ChevronRight className="w-5 h-5 text-stone-400 shrink-0" />
               </div>
             </div>
 
-            {/* Mode of Transportation Selector */}
-            <div className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-3">
-              <div>
-                <h3 className="font-sans font-bold text-xs text-stone-900">
-                  {t.market_transpo_title}
-                </h3>
-                <p className="text-[11px] text-stone-500">
-                  {t.market_transpo_sub}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  {
-                    id: 'walk' as TransportMode,
-                    label: t.market_transpo_walk,
-                    icon: <Footprints className="w-4 h-4" />,
-                  },
-                  {
-                    id: 'commute' as TransportMode,
-                    label: t.market_transpo_commute,
-                    icon: <Bus className="w-4 h-4" />,
-                  },
-                  {
-                    id: 'car' as TransportMode,
-                    label: t.market_transpo_car,
-                    icon: <Car className="w-4 h-4" />,
-                  },
-                ].map((m) => {
-                  const isSelected = transportMode === m.id;
-                  return (
-                    <button
-                      key={m.id}
-                      type="button"
-                      onClick={() => setTransportMode(m.id)}
-                      className={`p-2.5 rounded-xl border text-center transition-all tap-spring flex flex-col items-center justify-center gap-1 ${
-                        isSelected
-                          ? 'bg-[#B8381D] text-white border-[#B8381D] shadow-xs'
-                          : 'bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100'
-                      }`}
-                    >
-                      <div className={isSelected ? 'text-white' : 'text-[#B8381D]'}>
-                        {m.icon}
-                      </div>
-                      <span className="text-[11px] font-bold leading-tight">{m.label}</span>
-                    </button>
-                  );
-                })}
+            {/* Mode of Transportation Card (Opens dedicated selection page) */}
+            <div 
+              onClick={() => setCurrentView('transport')}
+              className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-none space-y-2 cursor-pointer tap-spring hover:border-stone-300 transition-all"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-stone-400">
+                    {language === 'tl' ? 'Paraan ng Pagpunta' : 'MODE OF TRANSPORTATION'}
+                  </span>
+                  <div className="text-xs font-bold text-stone-900 flex items-center gap-1.5 mt-0.5">
+                    {transportMode === 'dynamic' ? <Sparkles className="w-3.5 h-3.5 text-amber-500" /> :
+                     transportMode === 'walk' ? <Footprints className="w-3.5 h-3.5 text-[#B8381D]" /> :
+                     transportMode === 'commute' ? <Bus className="w-3.5 h-3.5 text-blue-600" /> :
+                     <Car className="w-3.5 h-3.5 text-emerald-600" />}
+                    <span>
+                      {transportMode === 'dynamic' ? (language === 'tl' ? 'Dynamic (Kahit ano / Flexible)' : 'Dynamic (Flexible / Any)') :
+                       transportMode === 'walk' ? (language === 'tl' ? 'Lakad lang' : 'Walking') :
+                       transportMode === 'commute' ? (language === 'tl' ? 'Commute (Jeep / Bus / Trike)' : 'Commute / Public Transit') :
+                       (language === 'tl' ? 'Kotse o Motor' : 'Car / Motor')}
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-stone-500 font-medium mt-0.5 pl-5">
+                    {transportMode === 'dynamic'
+                      ? (language === 'tl' ? 'Awtomatikong umaakma sa pinakamabilis o swak na paraan' : 'Automatically adapts to fastest or best travel mode')
+                      : (language === 'tl' ? 'Naka-base ang kalkulasyon ng oras sa napili' : 'Travel times calculated based on this mode')}
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-stone-400 shrink-0" />
               </div>
             </div>
 
@@ -837,25 +812,10 @@ export default function MoreTab() {
                     <span>{activeWetMarket.name}</span>
                   </div>
                   <div className="text-[11px] text-stone-500 font-medium mt-0.5 pl-5">
-                    {activeWetMarket.distanceKm} km • {
-                      transportMode === 'walk'
-                        ? `${activeWetMarket.walkMinutes} mins lakad`
-                        : transportMode === 'commute'
-                        ? `~${activeWetMarket.commuteMinutes} mins commute`
-                        : `~${activeWetMarket.driveMinutes} mins biyahe`
-                    } {activeWetMarket.trafficLevel === 'Heavy' ? '• ⚠️ Mabigat ang trapiko' : ''}
+                    {activeWetMarket.distanceKm} km • {formatStoreTravelTime(activeWetMarket, transportMode)} {activeWetMarket.trafficLevel === 'Heavy' ? '• ⚠️ Mabigat ang trapiko' : ''}
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openStoreMap('wetmarket');
-                  }}
-                  className="text-xs font-bold text-[#B8381D] bg-[#FDECE8] px-3 py-1.5 rounded-lg tap-spring hover:bg-[#B8381D]/15 transition-colors shrink-0"
-                >
-                  {language === 'tl' ? 'Palitan' : 'Change'}
-                </button>
+                <ChevronRight className="w-5 h-5 text-stone-400 shrink-0" />
               </div>
             </div>
 
@@ -874,25 +834,10 @@ export default function MoreTab() {
                     <span>{activeSupermarket.name}</span>
                   </div>
                   <div className="text-[11px] text-stone-500 font-medium mt-0.5 pl-5">
-                    {activeSupermarket.distanceKm} km • {
-                      transportMode === 'walk'
-                        ? `${activeSupermarket.walkMinutes} mins lakad`
-                        : transportMode === 'commute'
-                        ? `~${activeSupermarket.commuteMinutes} mins commute`
-                        : `~${activeSupermarket.driveMinutes} mins biyahe`
-                    }
+                    {activeSupermarket.distanceKm} km • {formatStoreTravelTime(activeSupermarket, transportMode)} • {activeSupermarket.badge}
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openStoreMap('supermarket');
-                  }}
-                  className="text-xs font-bold text-[#B8381D] bg-[#FDECE8] px-3 py-1.5 rounded-lg tap-spring hover:bg-[#B8381D]/15 transition-colors shrink-0"
-                >
-                  {language === 'tl' ? 'Palitan' : 'Change'}
-                </button>
+                <ChevronRight className="w-5 h-5 text-stone-400 shrink-0" />
               </div>
             </div>
 
@@ -944,6 +889,121 @@ export default function MoreTab() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* VIEW: MODE OF TRANSPORTATION (Dedicated Selection Page)       */}
+      {/* ============================================================ */}
+      {currentView === 'transport' && (
+        <div className="animate-in slide-in-from-right duration-250">
+          <section className="bg-[#B8381D] text-white px-5 pt-safe pb-5 rounded-b-[36px] shadow-md">
+            <div className="flex items-center gap-3 mb-2">
+              <Button
+                variant="glass"
+                icon={<ArrowLeft className="w-5 h-5 text-white" />}
+                onClick={() => setCurrentView('palengke')}
+                className="!w-9 !h-9 !rounded-full !p-0 lg-glass-clear flex items-center justify-center drop-shadow-sm"
+              />
+              <h1 className="font-serif-title font-bold text-xl text-white">
+                {language === 'tl' ? 'Paraan ng Pagpunta' : 'Mode of Transportation'}
+              </h1>
+            </div>
+            <p className="text-xs text-white/80 pl-12 font-sans">
+              {language === 'tl'
+                ? 'Piliin kung paano ka karaniwang bumibiyahe papunta sa mga pamilihan.'
+                : 'Choose how you usually get to wet markets and supermarkets.'}
+            </p>
+          </section>
+
+          <div className="px-4 pt-4 space-y-3">
+            {[
+              {
+                id: 'dynamic' as TransportMode,
+                title: language === 'tl' ? 'Dynamic (Kahit ano / Flexible)' : 'Dynamic (Flexible / Any)',
+                badge: language === 'tl' ? 'Rekomendado' : 'Recommended',
+                desc: language === 'tl'
+                  ? 'Walang pinipiling paraan — flexible at kusang umaakma depende sa layo, trapiko, at panahon (lakad, commute, o kotse).'
+                  : 'Flexible — automatically adapts travel estimates based on distance, live traffic, and convenience.',
+                icon: <Sparkles className="w-5 h-5 text-amber-500" />,
+                iconBg: 'bg-amber-100',
+              },
+              {
+                id: 'walk' as TransportMode,
+                title: language === 'tl' ? 'Lakad lang (Walking)' : 'Walking Only',
+                badge: language === 'tl' ? '0-15 mins • ₱0 Pamasahe' : '0-15 mins • ₱0 Fare',
+                desc: language === 'tl'
+                  ? 'Pabor sa ligtas na bangketa, tawiran, at maiikling distansya.'
+                  : 'Prioritizes safe pedestrian sidewalks, walkways, and zero-fare shopping.',
+                icon: <Footprints className="w-5 h-5 text-[#B8381D]" />,
+                iconBg: 'bg-[#FDECE8]',
+              },
+              {
+                id: 'commute' as TransportMode,
+                title: language === 'tl' ? 'Commute (Jeep / Bus / Trike)' : 'Public Transit (Commute)',
+                badge: language === 'tl' ? 'Jeep • Bus • Trike' : 'Jeep • Carousel • Trike',
+                desc: language === 'tl'
+                  ? 'Pampublikong sasakyan, regular na pamasahe (₱13-₱25), at mga sakayan sa Muñoz/Balintawak.'
+                  : 'Calculates public transit fares and nearest jeepney/bus stops.',
+                icon: <Bus className="w-5 h-5 text-blue-600" />,
+                iconBg: 'bg-blue-100',
+              },
+              {
+                id: 'car' as TransportMode,
+                title: language === 'tl' ? 'Kotse o Motorsiklo (Personal Vehicle)' : 'Car or Motorcycle',
+                badge: language === 'tl' ? 'Mabilis • May Parking' : 'Direct • Parking Check',
+                desc: language === 'tl'
+                  ? 'Mabilisang biyahe gamit ang sariling sasakyan sa EDSA, Roosevelt, at Congressional Ave.'
+                  : 'Driving times via major thoroughfares with parking considerations.',
+                icon: <Car className="w-5 h-5 text-emerald-600" />,
+                iconBg: 'bg-emerald-100',
+              },
+            ].map((opt) => {
+              const isSelected = transportMode === opt.id;
+              return (
+                <div
+                  key={opt.id}
+                  onClick={() => setTransportMode(opt.id)}
+                  className={`bg-white rounded-2xl p-4 border transition-all cursor-pointer tap-spring ${
+                    isSelected
+                      ? 'border-[#B8381D] ring-2 ring-[#B8381D]/20 shadow-sm bg-[#FFFDFB]'
+                      : 'border-stone-200/80 hover:border-stone-300 shadow-none'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-xl ${opt.iconBg} flex items-center justify-center shrink-0 mt-0.5`}>
+                        {opt.icon}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-sans font-bold text-sm text-stone-900">
+                            {opt.title}
+                          </h3>
+                        </div>
+                        <span className="inline-block text-[10px] font-bold text-stone-500 bg-stone-100 px-2 py-0.5 rounded-md mt-1">
+                          {opt.badge}
+                        </span>
+                        <p className="text-xs text-stone-500 font-medium mt-1.5 leading-relaxed">
+                          {opt.desc}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="shrink-0 pt-1">
+                      {isSelected ? (
+                        <div className="w-6 h-6 rounded-full bg-[#B8381D] text-white flex items-center justify-center shadow-xs">
+                          <Check className="w-3.5 h-3.5 stroke-[3]" />
+                        </div>
+                      ) : (
+                        <div className="w-6 h-6 rounded-full border-2 border-stone-300" />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
